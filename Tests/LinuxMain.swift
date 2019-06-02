@@ -3,5 +3,6 @@ import XCTest
 import TablierTests
 
 var tests = [XCTestCaseEntry]()
-tests += TablierTests.allTests()
+tests += TablierTests.__allTests()
+
 XCTMain(tests)
