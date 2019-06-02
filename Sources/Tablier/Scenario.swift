@@ -1,16 +1,33 @@
 import struct Foundation.TimeInterval
 
-public typealias TestCase<Input, Output> = (input: Input, expected: Output, file: StaticString, line: UInt)
+#if swift(>=5)
+#else
+enum Result<Success, Failure> {
+    case success(Success)
+    case failure(Failure)
 
-public final class Scenario<Input, Output> {
+    init(catching body: () throws -> Success) {
+        do {
+            let success = try body()
+            self = .success(success)
+        } catch let error {
+            self = .failure(error)
+        }
+    }
+}
+
+extension Result: Equatable where Success: Equatable, Failure: Equatable {}
+#endif
+
+public final class Scenario<Input, Output: Equatable> {
     public static var defaultTimeout: TimeInterval { return 5 }
 
-    public typealias Completion = (Output) -> Void
+    public typealias Completion = (Result<Output, Error>) -> Void
 
-    public typealias SyncScenario = (Input) -> Output
+    public typealias SyncScenario = (Input) throws -> Output
     public typealias AsyncScenario = (Input, _ completion: Completion) -> Void
 
-    var testCases: [TestCase<Input, Output>] = []
+    var testCases: [TestCase] = []
 
     let scenario: AsyncScenario
     let description: String
@@ -24,7 +41,7 @@ public final class Scenario<Input, Output> {
 
     public convenience init(description: String = "", sync scenario: @escaping SyncScenario) {
         self.init(description: description, timeout: 0, async: { input, completion in
-            let result = scenario(input)
+            let result = Result { try scenario(input) }
             return completion(result)
         })
     }
@@ -32,10 +49,10 @@ public final class Scenario<Input, Output> {
 
 extension Scenario where Output: Equatable {
     public func assert<T: Assertable>(with assertion: T) {
-        let expectations: [T.Expectation] = testCases.map { (input, expected, file, line) in
+        let expectations: [T.Expectation] = testCases.map { testCase in
             let expectation = assertion.makeExpectation(description: description)
-            scenario(input) { actual in
-                assertion.assert(actual: actual, expected: expected, file: file, line: line)
+            scenario(testCase.input) { actual in
+                assertion.assert(actual: actual, expected: testCase.expected, file: testCase.file, line: testCase.line)
                 expectation.fulfill()
             }
             return expectation
@@ -59,5 +76,14 @@ extension Scenario {
             let testcase = TestCase(input: input, expected: expected, file: file, line: line)
             scenario.testCases.append(testcase)
         }
+    }
+}
+
+extension Scenario {
+    public struct TestCase {
+        let input: Input
+        let expected: Output
+        let file: StaticString
+        let line: UInt
     }
 }

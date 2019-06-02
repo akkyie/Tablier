@@ -1,32 +1,38 @@
 import XCTest
 @testable import Tablier
 
-final class MockAssertion: Assertable {
-    struct Expectation: Fullfillable {
-        func fulfill() {}
+fileprivate struct Foo: Equatable {}
+
+struct MockExpectation: Fullfillable {
+    let mockFullfill: () -> Void
+    func fulfill() { mockFullfill() }
+}
+
+struct MockAssertion: Assertable {
+    let mockMakeExpectation: (_ description: String) -> Expectation
+    let mockWait: ([MockExpectation], TimeInterval) -> Void
+    let mockAssertSuccess: (Any, Any, StaticString, UInt) -> Void
+    let mockAssertFailure: (Any, Any, StaticString, UInt) -> Void
+
+    func makeExpectation(description: String) -> MockExpectation {
+        return mockMakeExpectation(description)
     }
 
-    var description: String = ""
-    var expectations: [Expectation] = []
-    var assertions: [(actual: Any, expected: Any)] = []
-    var waitCallCount: Int = 0
-
-    func makeExpectation(description: String) -> Expectation {
-        self.description = description
-
-        let expectation = Expectation()
-        expectations.append(expectation)
-        return expectation
+    func wait(for expectations: [MockExpectation], timeout: TimeInterval) {
+        mockWait(expectations, timeout)
     }
 
-    func wait(for expectations: [Expectation], timeout: TimeInterval) {
-        waitCallCount += 1
-    }
-
-    func assert<Output: Equatable>(actual: Output, expected: Output, file: StaticString, line: UInt) {
-        assertions.append((actual: actual, expected: expected))
+    func assert<Output: Equatable>(actual: Result<Output, Error>, expected: Output, file: StaticString, line: UInt) {
+        switch actual {
+        case let .success(actual):
+            mockAssertSuccess(actual, expected, file, line)
+        case let .failure(actual):
+            mockAssertFailure(actual, expected, file, line)
+        }
     }
 }
+
+struct MockError: Error, Equatable {}
 
 final class ScenarioTests: XCTestCase {
     func testSync() {
@@ -42,7 +48,7 @@ final class ScenarioTests: XCTestCase {
         do {
             let scenario = Scenario<String, Int> { input, completion in
                 XCTFail("initializer should not run the actual scenario")
-                completion(0)
+                completion(.success(0))
             }
 
             XCTAssertEqual(scenario.timeout, 5,
@@ -52,7 +58,7 @@ final class ScenarioTests: XCTestCase {
         do {
             let scenario = Scenario<String, Int>(timeout: 100) { input, completion in
                 XCTFail("initializer should not run the actual scenario")
-                completion(0)
+                completion(.success(0))
             }
 
             XCTAssertEqual(scenario.timeout, 100,
@@ -61,53 +67,111 @@ final class ScenarioTests: XCTestCase {
     }
 
     func testCondition() {
-        let scenario = Scenario<Void, Void> {
+        let scenario = Scenario<Foo, Foo> { _ in
             XCTFail("making condition should not run the actual scenario")
-            return
+            return Foo()
         }
 
-        let condition = scenario.when(input: ())
+        let condition = scenario.when(input: Foo())
         XCTAssert(condition.scenario === scenario)
-        XCTAssert(condition.input == ())
+        XCTAssert(condition.input == Foo())
     }
 
     func testExpectation() {
-        let scenario = Scenario<Void, Void> {
+        let scenario = Scenario<Foo, Foo> { _ in
             XCTFail("making expectation should not run the actual scenario")
-            return
+            return Foo()
         }
 
         XCTAssert(scenario.testCases.isEmpty,
                   "scenario.expectations must be empty after initialization")
 
-        scenario.when(input: ()).expect(())
+        scenario.when(input: Foo()).expect(Foo())
         XCTAssertEqual(scenario.testCases.count, 1,
                        "expect() must append an expectation")
 
-        scenario.when(input: ()).expect(())
+        scenario.when(input: Foo()).expect(Foo())
         XCTAssertEqual(scenario.testCases.count, 2,
                        "expect() must append an expectation")
     }
 
-    func testAssert() {
-        let scenario = Scenario<String, String>(description: "description") { string in "actual" }
-
+    func testExpectSuccess() {
+        let scenario = Scenario<String, String>(description: "description") { string, completion in
+            completion(.success("actual"))
+        }
         scenario.when(input: "input").expect("expected")
 
-        let mock = MockAssertion()
+        let makeExpectationExpectation = expectation(description: "makeExpectation")
+        let fulfillExpectation = expectation(description: "fulfill")
+        let waitExpectation = expectation(description: "wait")
+        let assertExpectation = expectation(description: "assert")
+
+        let mock = MockAssertion(mockMakeExpectation: { description in
+            XCTAssertEqual(description, "description",
+                           "mock should have the correct description")
+            makeExpectationExpectation.fulfill()
+            return MockExpectation(mockFullfill: {
+                fulfillExpectation.fulfill()
+            })
+        }, mockWait: { expectations, timeout in
+            XCTAssertEqual(expectations.count, 1)
+            waitExpectation.fulfill()
+        }, mockAssertSuccess: { actual, expected, _, _ in
+            XCTAssertEqual(actual as? String, "actual")
+            XCTAssertEqual(expected as? String, "expected")
+            assertExpectation.fulfill()
+        }, mockAssertFailure: { actual, expected, _, _ in
+            XCTFail()
+            assertExpectation.fulfill()
+        })
+
         scenario.assert(with: mock)
 
-        XCTAssertEqual(mock.description, "description",
-                       "mock should have the correct description")
-        XCTAssertEqual(mock.expectations.count, 1,
-                       "scenario.assert should add an expectation")
-        XCTAssertEqual(mock.assertions.count, 1,
-                       "scenario.assert should add an assertion")
-        XCTAssertEqual(mock.assertions[0].actual as? String, "actual",
-                       "assertion should have the correct actual value")
-        XCTAssertEqual(mock.assertions[0].expected as? String, "expected",
-                       "assertion should have the correct expected value")
-        XCTAssertEqual(mock.waitCallCount, 1,
-                       "scenario.assert should call assertion.wait")
+        wait(for: [
+            makeExpectationExpectation,
+            fulfillExpectation,
+            waitExpectation,
+            assertExpectation
+            ], timeout: 0)
+    }
+
+    func testExpectFailure() {
+        let scenario = Scenario<String, String>(description: "description") { string, completion in
+            completion(.failure(MockError()))
+        }
+        scenario.when(input: "input").expect("expected")
+
+        let makeExpectationExpectation = expectation(description: "makeExpectation")
+        let fulfillExpectation = expectation(description: "fulfill")
+        let waitExpectation = expectation(description: "wait")
+        let assertExpectation = expectation(description: "assert")
+
+        let mock = MockAssertion(mockMakeExpectation: { description in
+            XCTAssertEqual(description, "description",
+                           "mock should have the correct description")
+            makeExpectationExpectation.fulfill()
+            return MockExpectation(mockFullfill: {
+                fulfillExpectation.fulfill()
+            })
+        }, mockWait: { expectations, timeout in
+            XCTAssertEqual(expectations.count, 1)
+            waitExpectation.fulfill()
+        }, mockAssertSuccess: { actual, expected, _, _ in
+            XCTFail()
+            assertExpectation.fulfill()
+        }, mockAssertFailure: { actual, expected, _, _ in
+            XCTAssertEqual(actual as? MockError, MockError())
+            XCTAssertEqual(expected as? String, "expected")
+            assertExpectation.fulfill()
+        })
+
+        scenario.assert(with: mock)
+
+        wait(for: [
+            makeExpectationExpectation,
+            fulfillExpectation,
+            waitExpectation,
+            assertExpectation
+            ], timeout: 0)
     }
 }

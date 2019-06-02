@@ -7,7 +7,17 @@ extension XCTestCase: Assertable {
         return expectation(description: description)
     }
 
-    public func assert<Output: Equatable>(actual: Output, expected: Output, file: StaticString, line: UInt) {
-        XCTAssertEqual(actual, expected, file: file, line: line)
+    public func assert<Output: Equatable>(
+        actual: Result<Output, Error>,
+        expected: Output,
+        file: StaticString,
+        line: UInt
+    ) {
+        switch actual {
+        case let .success(actual):
+            XCTAssertEqual(actual, expected, file: file, line: line)
+        case let .failure(actual):
+            XCTFail("expected \(expected), but got error: \(actual)", file: file, line: line)
+        }
     }
 }
