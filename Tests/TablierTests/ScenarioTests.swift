@@ -1,7 +1,11 @@
-import XCTest
 @testable import Tablier
+import XCTest
 
-fileprivate struct Foo: Equatable {}
+#if canImport(Result)
+    import Result
+#endif
+
+private struct Foo: Equatable {}
 
 struct MockExpectation: Fullfillable {
     let mockFullfill: () -> Void
@@ -22,7 +26,7 @@ struct MockAssertion: Assertable {
         mockWait(expectations, timeout)
     }
 
-    func assert<Output: Equatable>(actual: Result<Output, Error>, expected: Output, file: StaticString, line: UInt) {
+    func assert<Output: Equatable>(actual: Result<Output, AnyError>, expected: Output, file: StaticString, line: UInt) {
         switch actual {
         case let .success(actual):
             mockAssertSuccess(actual, expected, file, line)
@@ -36,7 +40,7 @@ struct MockError: Error, Equatable {}
 
 final class ScenarioTests: XCTestCase {
     func testSync() {
-        let scenario = Scenario<String, Int> { input in
+        let scenario = Scenario<String, Int> { _ in
             XCTFail("initializer should not run the actual scenario")
             return 0
         }
@@ -46,7 +50,7 @@ final class ScenarioTests: XCTestCase {
 
     func testAsync() {
         do {
-            let scenario = Scenario<String, Int> { input, completion in
+            let scenario = Scenario<String, Int> { _, completion in
                 XCTFail("initializer should not run the actual scenario")
                 completion(.success(0))
             }
@@ -56,7 +60,7 @@ final class ScenarioTests: XCTestCase {
         }
 
         do {
-            let scenario = Scenario<String, Int>(timeout: 100) { input, completion in
+            let scenario = Scenario<String, Int>(timeout: 100) { _, completion in
                 XCTFail("initializer should not run the actual scenario")
                 completion(.success(0))
             }
@@ -96,7 +100,7 @@ final class ScenarioTests: XCTestCase {
     }
 
     func testExpectSuccess() {
-        let scenario = Scenario<String, String>(description: "description") { string, completion in
+        let scenario = Scenario<String, String>(description: "description") { _, completion in
             completion(.success("actual"))
         }
         scenario.when(input: "input").expect("expected")
@@ -113,14 +117,14 @@ final class ScenarioTests: XCTestCase {
             return MockExpectation(mockFullfill: {
                 fulfillExpectation.fulfill()
             })
-        }, mockWait: { expectations, timeout in
+        }, mockWait: { expectations, _ in
             XCTAssertEqual(expectations.count, 1)
             waitExpectation.fulfill()
         }, mockAssertSuccess: { actual, expected, _, _ in
             XCTAssertEqual(actual as? String, "actual")
             XCTAssertEqual(expected as? String, "expected")
             assertExpectation.fulfill()
-        }, mockAssertFailure: { actual, expected, _, _ in
+        }, mockAssertFailure: { _, _, _, _ in
             XCTFail()
             assertExpectation.fulfill()
         })
@@ -131,13 +135,13 @@ final class ScenarioTests: XCTestCase {
             makeExpectationExpectation,
             fulfillExpectation,
             waitExpectation,
-            assertExpectation
-            ], timeout: 0)
+            assertExpectation,
+        ], timeout: 0)
     }
 
     func testExpectFailure() {
-        let scenario = Scenario<String, String>(description: "description") { string, completion in
-            completion(.failure(MockError()))
+        let scenario = Scenario<String, String>(description: "description") { _, completion in
+            completion(.failure(.error(from: MockError())))
         }
         scenario.when(input: "input").expect("expected")
 
@@ -153,14 +157,14 @@ final class ScenarioTests: XCTestCase {
             return MockExpectation(mockFullfill: {
                 fulfillExpectation.fulfill()
             })
-        }, mockWait: { expectations, timeout in
+        }, mockWait: { expectations, _ in
             XCTAssertEqual(expectations.count, 1)
             waitExpectation.fulfill()
-        }, mockAssertSuccess: { actual, expected, _, _ in
+        }, mockAssertSuccess: { _, _, _, _ in
             XCTFail()
             assertExpectation.fulfill()
         }, mockAssertFailure: { actual, expected, _, _ in
-            XCTAssertEqual(actual as? MockError, MockError())
+            XCTAssertEqual((actual as? AnyError)?.error as? MockError, MockError())
             XCTAssertEqual(expected as? String, "expected")
             assertExpectation.fulfill()
         })
@@ -171,7 +175,7 @@ final class ScenarioTests: XCTestCase {
             makeExpectationExpectation,
             fulfillExpectation,
             waitExpectation,
-            assertExpectation
-            ], timeout: 0)
+            assertExpectation,
+        ], timeout: 0)
     }
 }

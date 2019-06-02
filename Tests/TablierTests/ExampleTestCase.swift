@@ -1,7 +1,7 @@
-import XCTest
 import Tablier
+import XCTest
 
-fileprivate struct Foo: Equatable, Codable {
+private struct Foo: Equatable, Codable {
     let int: Int
 }
 

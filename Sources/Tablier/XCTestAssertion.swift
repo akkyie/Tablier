@@ -1,5 +1,9 @@
 import XCTest
 
+#if canImport(Result)
+    import Result
+#endif
+
 extension XCTestExpectation: Fullfillable {}
 
 extension XCTestCase: Assertable {
@@ -8,7 +12,7 @@ extension XCTestCase: Assertable {
     }
 
     public func assert<Output: Equatable>(
-        actual: Result<Output, Error>,
+        actual: Result<Output, AnyError>,
         expected: Output,
         file: StaticString,
         line: UInt

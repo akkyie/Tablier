@@ -1,28 +1,13 @@
 import struct Foundation.TimeInterval
 
-#if swift(>=5)
-#else
-enum Result<Success, Failure> {
-    case success(Success)
-    case failure(Failure)
-
-    init(catching body: () throws -> Success) {
-        do {
-            let success = try body()
-            self = .success(success)
-        } catch let error {
-            self = .failure(error)
-        }
-    }
-}
-
-extension Result: Equatable where Success: Equatable, Failure: Equatable {}
+#if canImport(Result)
+    import Result
 #endif
 
 public final class Scenario<Input, Output: Equatable> {
     public static var defaultTimeout: TimeInterval { return 5 }
 
-    public typealias Completion = (Result<Output, Error>) -> Void
+    public typealias Completion = (Result<Output, AnyError>) -> Void
 
     public typealias SyncScenario = (Input) throws -> Output
     public typealias AsyncScenario = (Input, _ completion: Completion) -> Void
@@ -41,7 +26,7 @@ public final class Scenario<Input, Output: Equatable> {
 
     public convenience init(description: String = "", sync scenario: @escaping SyncScenario) {
         self.init(description: description, timeout: 0, async: { input, completion in
-            let result = Result { try scenario(input) }
+            let result = Result<Output, AnyError> { try scenario(input) }
             return completion(result)
         })
     }

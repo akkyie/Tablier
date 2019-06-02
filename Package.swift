@@ -2,23 +2,28 @@
 
 import PackageDescription
 
+var packageDependencies: [Package.Dependency] = []
+var tablierDependencies: [Target.Dependency] = []
+
+#if swift(>=5)
+#else
+    packageDependencies.append(.package(url: "https://github.com/antitypical/Result.git", from: "5.0.0"))
+    tablierDependencies.append("Result")
+#endif
+
 let package = Package(
     name: "Tablier",
     products: [
-        // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(
             name: "Tablier",
             targets: ["Tablier"]
         ),
     ],
-    dependencies: [
-        // Dependencies declare other packages that this package depends on.
-        // .package(url: /* package url */, from: "1.0.0"),
-    ],
+    dependencies: packageDependencies,
     targets: [
         .target(
             name: "Tablier",
-            dependencies: []
+            dependencies: tablierDependencies
         ),
         .testTarget(
             name: "TablierTests",
