@@ -1,0 +1,34 @@
+branches:
+  only:
+    - master
+
+notifications:
+  email: false
+
+matrix:
+  include:
+    - &macos
+      name: macOS / Swift 4.2
+      language: objective-c
+      os: osx
+      osx_image: xcode10.1
+      script:
+        - swift --version
+        - swift build
+        - swift test
+
+    - <<: *macos
+      name: macOS / Swift 5.0
+      osx_image: xcode10.2
+
+    - &linux
+      name: Linux / Swift 5.0
+      language: generic
+      dist: xenial
+      env: SWIFT_VERSION=5.0
+      install:
+        - eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"
+      script:
+        - swift --version
+        - swift build
+        - swift test
