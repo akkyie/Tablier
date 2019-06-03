@@ -9,20 +9,20 @@ private struct Foo: Equatable {}
 
 struct MockExpectation: Fullfillable {
     let mockFullfill: () -> Void
-    func fulfill() { mockFullfill() }
+    func fulfill(_: StaticString, line _: Int) { mockFullfill() }
 }
 
-struct MockAssertion: Assertable {
+struct MockTest: Testable {
     let mockMakeExpectation: (_ description: String) -> Expectation
     let mockWait: ([MockExpectation], TimeInterval) -> Void
     let mockAssertSuccess: (Any, Any, StaticString, UInt) -> Void
     let mockAssertFailure: (Any, Any, StaticString, UInt) -> Void
 
-    func makeExpectation(description: String) -> MockExpectation {
+    func expectation(description: String, file: StaticString, line: UInt) -> MockExpectation {
         return mockMakeExpectation(description)
     }
 
-    func wait(for expectations: [MockExpectation], timeout: TimeInterval) {
+    func wait(for expectations: [MockExpectation], timeout: TimeInterval, enforceOrder: Bool, file: StaticString, line: UInt) {
         mockWait(expectations, timeout)
     }
 
@@ -110,7 +110,7 @@ final class ScenarioTests: XCTestCase {
         let waitExpectation = expectation(description: "wait")
         let assertExpectation = expectation(description: "assert")
 
-        let mock = MockAssertion(mockMakeExpectation: { description in
+        let mock = MockTest(mockMakeExpectation: { description in
             XCTAssertEqual(description, "description",
                            "mock should have the correct description")
             makeExpectationExpectation.fulfill()
@@ -136,7 +136,7 @@ final class ScenarioTests: XCTestCase {
             fulfillExpectation,
             waitExpectation,
             assertExpectation,
-        ], timeout: 0)
+        ], timeout: 0, enforceOrder: false)
     }
 
     func testExpectFailure() {
@@ -150,7 +150,7 @@ final class ScenarioTests: XCTestCase {
         let waitExpectation = expectation(description: "wait")
         let assertExpectation = expectation(description: "assert")
 
-        let mock = MockAssertion(mockMakeExpectation: { description in
+        let mock = MockTest(mockMakeExpectation: { description in
             XCTAssertEqual(description, "description",
                            "mock should have the correct description")
             makeExpectationExpectation.fulfill()
@@ -176,6 +176,6 @@ final class ScenarioTests: XCTestCase {
             fulfillExpectation,
             waitExpectation,
             assertExpectation,
-        ], timeout: 0)
+        ], timeout: 0, enforceOrder: false)
     }
 }
