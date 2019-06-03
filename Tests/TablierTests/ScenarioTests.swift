@@ -45,7 +45,8 @@ final class ScenarioTests: XCTestCase {
             return 0
         }
 
-        XCTAssertEqual(scenario.timeout, 0)
+        XCTAssertEqual(scenario.timeout, 0,
+                       "sync initializer should have 0s timeout")
     }
 
     func testAsync() {
@@ -198,5 +199,43 @@ final class ScenarioTests: XCTestCase {
         scenario.assert(with: mock)
 
         wait(for: [fulfillExpectation], timeout: 0, enforceOrder: false)
+    }
+
+    func testIsCompleted() {
+        let scenario = Scenario<Foo, Foo> { _ in
+            return Foo()
+        }
+
+        let mock = MockTest(
+            mockMakeExpectation: { _ in MockExpectation(mockFulfill: {}) },
+            mockWait: { _, _ in },
+            mockAssertSuccess: { _, _, _, _ in },
+            mockAssertFailure: { _, _, _, _ in }
+        )
+
+        XCTAssertEqual(scenario.isCompleted, false,
+                  "scenario.isCompleted should be false before assert()")
+
+        scenario.when(input: Foo()).expect(Foo())
+
+        XCTAssertEqual(scenario.isCompleted, false,
+                       "scenario.isCompleted should be false after adding expectation")
+
+        scenario.assert(with: mock)
+
+        XCTAssertEqual(scenario.isCompleted, true,
+                       "scenario.isCompleted should be true after assert()")
+
+        scenario.when(input: Foo()).expect(Foo())
+
+        XCTAssertEqual(scenario.isCompleted, false,
+                       "scenario.isCompleted should be false after adding expectation")
+
+        scenario.assert(with: mock)
+
+        XCTAssertEqual(scenario.isCompleted, true,
+                       "scenario.isCompleted should be true after assert()")
+
+        scenario.assert(with: mock)
     }
 }
