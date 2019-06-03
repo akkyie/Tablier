@@ -178,4 +178,25 @@ final class ScenarioTests: XCTestCase {
             assertExpectation,
         ], timeout: 0, enforceOrder: false)
     }
+
+    func testNoCompeletionCall() {
+        let scenario = Scenario<String, String>(description: "description") { _, completion in }
+        scenario.when(input: "input").expect("expected")
+
+        let fulfillExpectation = expectation(description: "fulfill")
+        fulfillExpectation.isInverted = true
+
+        let mock = MockTest(mockMakeExpectation: { description in
+            return MockExpectation(mockFullfill: {
+                fulfillExpectation.fulfill()
+            })
+        }, mockWait: { expectations, _ in
+        }, mockAssertSuccess: { _, _, _, _ in
+        }, mockAssertFailure: { _, _, _, _ in
+        })
+
+        scenario.assert(with: mock)
+
+        wait(for: [fulfillExpectation], timeout: 0, enforceOrder: false)
+    }
 }
