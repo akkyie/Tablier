@@ -7,10 +7,6 @@ import XCTest
 extension XCTestExpectation: Fullfillable {}
 
 extension XCTestCase: Assertable {
-    public func makeExpectation(description: String) -> XCTestExpectation {
-        return expectation(description: description)
-    }
-
     public func assert<Output: Equatable>(
         actual: Result<Output, AnyError>,
         expected: Output,
@@ -25,3 +21,36 @@ extension XCTestCase: Assertable {
         }
     }
 }
+
+extension XCTestCase: Waitable {
+    public typealias Expectation = XCTestExpectation
+
+    public func expectation(description: String, file: StaticString, line: UInt) -> XCTestExpectation {
+        #if os(macOS)
+        return expectation(description: description)
+        #else
+        return XCTestExpectation(description: description, file: file, line: Int(line))
+        #endif
+    }
+}
+
+// Shim for the difference between swift-corelibs-xctest and XCTest
+#if os(macOS)
+extension XCTestExpectation {
+    public func fulfill(_ file: StaticString, line: Int) {
+        fulfill()
+    }
+}
+
+extension XCTestCase {
+    public func wait(for expectations: [XCTestExpectation], timeout: TimeInterval, enforceOrder: Bool, file: StaticString, line: UInt) {
+        wait(for: expectations, timeout: timeout, enforceOrder: enforceOrder)
+    }
+}
+#else
+extension XCTestCase {
+    public func wait(for expectations: [XCTestExpectation], timeout: TimeInterval, enforceOrder: Bool, file: StaticString, line: UInt) {
+        wait(for: expectations, timeout: timeout, enforceOrder: enforceOrder, file: file, line: Int(line))
+    }
+}
+#endif

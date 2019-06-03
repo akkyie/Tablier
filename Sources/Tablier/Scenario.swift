@@ -33,16 +33,16 @@ public final class Scenario<Input, Output: Equatable> {
 }
 
 extension Scenario where Output: Equatable {
-    public func assert<T: Assertable>(with assertion: T) {
+    public func assert<T: Testable>(with testable: T, file: StaticString = #file, line: UInt = #line) {
         let expectations: [T.Expectation] = testCases.map { testCase in
-            let expectation = assertion.makeExpectation(description: description)
+            let expectation = testable.expectation(description: description, file: testCase.file, line: testCase.line)
             scenario(testCase.input) { actual in
-                assertion.assert(actual: actual, expected: testCase.expected, file: testCase.file, line: testCase.line)
-                expectation.fulfill()
+                testable.assert(actual: actual, expected: testCase.expected, file: testCase.file, line: testCase.line)
+                expectation.fulfill(testCase.file, line: Int(testCase.line))
             }
             return expectation
         }
-        assertion.wait(for: expectations, timeout: timeout)
+        testable.wait(for: expectations, timeout: timeout, enforceOrder: false, file: file, line: line)
     }
 }
 
