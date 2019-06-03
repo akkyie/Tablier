@@ -7,19 +7,34 @@ notifications:
 
 matrix:
   include:
-    - &macos
-      name: macOS / Swift 4.2
+    - &swiftpm
+      name: SwiftPM / macOS / Swift 5.0
       language: objective-c
       os: osx
-      osx_image: xcode10.1
+      osx_image: xcode10.2
       script:
         - swift --version
         - swift build
         - swift test
 
-    - <<: *macos
-      name: macOS / Swift 5.0
+    - <<: *swiftpm
+      name: SwiftPM / macOS / Swift 4.2
+      osx_image: xcode10.1
+
+    - &xcode
+      name: Xcode / macOS / Swift 5.0
+      language: objective-c
       osx_image: xcode10.2
+      os: osx
+      script:
+        - swift package generate-xcodeproj --enable-code-coverage
+        - xcodebuild build test -project Tablier.xcodeproj -scheme Tablier-Package
+      after_success:
+        - bash <(curl -s https://codecov.io/bash) -X gcov -J '^Tablier$'
+
+    - <<: *xcode
+      name: Xcode / macOS / Swift 4.2
+      osx_image: xcode10.1
 
     - &linux
       name: Linux / Swift 5.0
