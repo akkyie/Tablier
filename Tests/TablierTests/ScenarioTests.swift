@@ -7,9 +7,9 @@ import XCTest
 
 private struct Foo: Equatable {}
 
-struct MockExpectation: Fullfillable {
-    let mockFullfill: () -> Void
-    func fulfill(_: StaticString, line _: Int) { mockFullfill() }
+struct MockExpectation: Fulfillable {
+    let mockFulfill: () -> Void
+    func fulfill(_: StaticString, line _: Int) { mockFulfill() }
 }
 
 struct MockTest: Testable {
@@ -114,7 +114,7 @@ final class ScenarioTests: XCTestCase {
             XCTAssertEqual(description, "description",
                            "mock should have the correct description")
             makeExpectationExpectation.fulfill()
-            return MockExpectation(mockFullfill: {
+            return MockExpectation(mockFulfill: {
                 fulfillExpectation.fulfill()
             })
         }, mockWait: { expectations, _ in
@@ -154,7 +154,7 @@ final class ScenarioTests: XCTestCase {
             XCTAssertEqual(description, "description",
                            "mock should have the correct description")
             makeExpectationExpectation.fulfill()
-            return MockExpectation(mockFullfill: {
+            return MockExpectation(mockFulfill: {
                 fulfillExpectation.fulfill()
             })
         }, mockWait: { expectations, _ in
@@ -187,7 +187,7 @@ final class ScenarioTests: XCTestCase {
         fulfillExpectation.isInverted = true
 
         let mock = MockTest(mockMakeExpectation: { description in
-            return MockExpectation(mockFullfill: {
+            return MockExpectation(mockFulfill: {
                 fulfillExpectation.fulfill()
             })
         }, mockWait: { expectations, _ in
