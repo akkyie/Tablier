@@ -12,7 +12,11 @@ public final class Scenario<Input, Output: Equatable> {
     public typealias SyncScenario = (Input) throws -> Output
     public typealias AsyncScenario = (Input, _ completion: Completion) -> Void
 
-    var testCases: [TestCase] = []
+    var testCases: [TestCase] = [] {
+        didSet { areTestCasesNew = true }
+    }
+
+    var areTestCasesNew: Bool = true
 
     let scenario: AsyncScenario
     let description: String
@@ -34,6 +38,8 @@ public final class Scenario<Input, Output: Equatable> {
 
 extension Scenario where Output: Equatable {
     public func assert<T: Testable>(with testable: T, file: StaticString = #file, line: UInt = #line) {
+        defer { areTestCasesNew = false }
+
         let expectations: [T.Expectation] = testCases.map { testCase in
             let expectation = testable.expectation(description: description, file: testCase.file, line: testCase.line)
             scenario(testCase.input) { actual in
