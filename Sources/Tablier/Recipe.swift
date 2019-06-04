@@ -1,13 +1,10 @@
 import struct Foundation.TimeInterval
-
-#if canImport(Result)
-    import Result
-#endif
+import Result
 
 public final class Recipe<Input, Output: Equatable> {
     public static var defaultTimeout: TimeInterval { return 5 }
 
-    public typealias Completion = (Result<Output, AnyError>) -> Void
+    public typealias Completion = (Result<Output, TablierError>) -> Void
     public typealias RecipeClosure = (Input, _ completion: Completion) -> Void
 
     let recipe: RecipeClosure
@@ -22,7 +19,10 @@ public final class Recipe<Input, Output: Equatable> {
 
     public convenience init(description: String = "", sync recipe: @escaping (Input) throws -> Output) {
         self.init(description: description, timeout: 0, async: { input, completion in
-            let result = Result<Output, AnyError> { try recipe(input) }
+            let result = Result<Output, TablierError>(catching: {
+                do { return try recipe(input) }
+                catch let error { throw TablierError(error) }
+            })
             return completion(result)
         })
     }

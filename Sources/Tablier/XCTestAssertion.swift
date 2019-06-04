@@ -8,7 +8,7 @@ extension XCTestExpectation: Fullfillable {}
 
 extension XCTestCase: Assertable {
     public func assert<Output: Equatable>(
-        actual: Result<Output, AnyError>,
+        actual: Result<Output, TablierError>,
         expected: Output,
         file: StaticString,
         line: UInt
