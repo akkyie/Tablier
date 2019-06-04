@@ -1,7 +1,13 @@
 import struct Foundation.TimeInterval
 import Result
 
-public final class Recipe<Input, Output: Equatable> {
+protocol RecipeType: AnyObject {
+    associatedtype Input
+    associatedtype Output: Equatable
+    var testCases: [TestCase<Input, Output>] { get set }
+}
+
+public final class Recipe<Input, Output: Equatable>: RecipeType {
     public static var defaultTimeout: TimeInterval { return 5 }
 
     public typealias Completion = (Result<Output, TablierError>) -> Void
@@ -11,6 +17,8 @@ public final class Recipe<Input, Output: Equatable> {
     let description: String
     let timeout: TimeInterval
 
+    var testCases: [TestCase<Input, Output>] = []
+
     public init(description: String = "", timeout: TimeInterval = defaultTimeout, async recipe: @escaping RecipeClosure) {
         self.recipe = recipe
         self.description = description
@@ -19,21 +27,26 @@ public final class Recipe<Input, Output: Equatable> {
 
     public convenience init(description: String = "", sync recipe: @escaping (Input) throws -> Output) {
         self.init(description: description, timeout: 0, async: { input, completion in
-            let result = Result<Output, TablierError>(catching: {
-                do { return try recipe(input) }
+            let actual = Result<Output, TablierError>(catching: {
+                let actual: Output
+                do { actual = try recipe(input) }
                 catch let error { throw TablierError(error) }
+                return actual
             })
-            return completion(result)
+            return completion(actual)
         })
     }
 }
 
 extension Recipe {
-    public func assert<T: Testable>(with testable: T, file: StaticString = #file, line: UInt = #line, assertion: (_ when: (Input) -> When) -> Void) {
-        var testCases: [TestCase] = []
-
-        let when: (Input) -> When = { input in When(testCases: &testCases, recipe: self, input: input) }
-        assertion(when)
+    public func assert<T: Testable>(
+        with testable: T,
+        file: StaticString = #file,
+        line: UInt = #line,
+        assertion makeTestCases: (_ when: (Input) -> When) -> Void
+    ) {
+        let when: (Input) -> When = { input in When(recipe: self, input: input) }
+        makeTestCases(when)
 
         let expectations: [T.Expectation] = testCases.map { testCase in
             let expectation = testable.expectation(description: description, file: testCase.file, line: testCase.line)

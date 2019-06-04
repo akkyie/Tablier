@@ -1,9 +1,6 @@
 @testable import Tablier
 import XCTest
-
-#if canImport(Result)
-    import Result
-#endif
+import Result
 
 struct Foo: Equatable {}
 struct MockError: Error, Equatable {}
