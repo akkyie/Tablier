@@ -29,7 +29,7 @@ public final class Recipe<Input, Output: Equatable> {
     }
 }
 
-extension Recipe where Output: Equatable {
+extension Recipe {
     public func assert<T: Testable>(with testable: T, file: StaticString = #file, line: UInt = #line, assertion: (_ when: (Input) -> When) -> Void) {
         var testCases: [TestCase] = []
 
