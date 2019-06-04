@@ -38,34 +38,34 @@ struct MockTest: Testable {
 
 struct MockError: Error, Equatable {}
 
-final class ScenarioTests: XCTestCase {
+final class RecipeTests: XCTestCase {
     func testSync() {
-        let scenario = Scenario<String, Int> { _ in
-            XCTFail("initializer should not run the actual scenario")
+        let recipe = Recipe<String, Int> { _ in
+            XCTFail("initializer should not run the actual recipe")
             return 0
         }
 
-        XCTAssertEqual(scenario.timeout, 0)
+        XCTAssertEqual(recipe.timeout, 0)
     }
 
     func testAsync() {
         do {
-            let scenario = Scenario<String, Int> { _, completion in
-                XCTFail("initializer should not run the actual scenario")
+            let recipe = Recipe<String, Int> { _, completion in
+                XCTFail("initializer should not run the actual recipe")
                 completion(.success(0))
             }
 
-            XCTAssertEqual(scenario.timeout, 5,
+            XCTAssertEqual(recipe.timeout, 5,
                            "init(async:) should have default timeout")
         }
 
         do {
-            let scenario = Scenario<String, Int>(timeout: 100) { _, completion in
-                XCTFail("initializer should not run the actual scenario")
+            let recipe = Recipe<String, Int>(timeout: 100) { _, completion in
+                XCTFail("initializer should not run the actual recipe")
                 completion(.success(0))
             }
 
-            XCTAssertEqual(scenario.timeout, 100,
+            XCTAssertEqual(recipe.timeout, 100,
                            "timeout should be configurable")
         }
     }
