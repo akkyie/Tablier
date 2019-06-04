@@ -60,4 +60,83 @@ final class RecipeTests: XCTestCase {
                            "timeout should be configurable")
         }
     }
+
+    func testAssertInit() {
+        let mockTest = MockTest()
+
+        let recipe = Recipe<Foo, Foo> { _, completion in
+            XCTFail("initializer should not run when no test case is added")
+        }
+
+        recipe.assert(with: mockTest) { _ in }
+    }
+
+    func testAssertCompleted() {
+        let expectationExpectation = expectation(description: "expectation")
+        let recipeExpectatation = expectation(description: "recipe")
+        let assertExpectation = expectation(description: "assert")
+        let fulfillExpectation = expectation(description: "fulfill")
+        let waitExpectation = expectation(description: "wait")
+
+        let mockTest = MockTest(
+            assertExpectation: assertExpectation,
+            expectationExpectation: expectationExpectation,
+            fulfillExpectation: fulfillExpectation,
+            waitExpectation: waitExpectation
+        )
+
+        let recipe = Recipe<String, String> { input, completion in
+            XCTAssertEqual(input, "input",
+                           "assert(with:) should run the recipe")
+            recipeExpectatation.fulfill()
+            completion(.success("actual"))
+        }
+
+        recipe.assert(with: mockTest) { when in
+            when("input").expect("expected")
+        }
+
+        wait(for: [
+            expectationExpectation,
+            recipeExpectatation,
+            assertExpectation,
+            fulfillExpectation,
+            waitExpectation,
+        ], timeout: 0.1, enforceOrder: true)
+    }
+
+    func testAssertNotCompelted() {
+        let expectationExpectation = expectation(description: "expectation")
+        let recipeExpectatation = expectation(description: "recipe")
+        let assertExpectation = expectation(description: "assert")
+        assertExpectation.isInverted = true
+        let fulfillExpectation = expectation(description: "fulfill")
+        fulfillExpectation.isInverted = true
+        let waitExpectation = expectation(description: "wait")
+
+        let mockTest = MockTest(
+            assertExpectation: assertExpectation,
+            expectationExpectation: expectationExpectation,
+            fulfillExpectation: fulfillExpectation,
+            waitExpectation: waitExpectation
+        )
+
+        let recipe = Recipe<String, String> { input, completion in
+            XCTAssertEqual(input, "input",
+                           "assert(with:) should run the recipe")
+            recipeExpectatation.fulfill()
+        }
+
+        recipe.assert(with: mockTest) { when in
+            when("input").expect("expected")
+        }
+
+        wait(for: [
+            expectationExpectation,
+            recipeExpectatation,
+            assertExpectation,
+            fulfillExpectation,
+            waitExpectation,
+        ], timeout: 0.1, enforceOrder: true)
+    }
 }

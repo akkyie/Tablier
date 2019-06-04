@@ -8,7 +8,7 @@ final class AnyRecipe<Input, Output: Equatable>: RecipeType {
     private let setTestCases: ([TestCase<Input, Output>]) -> Void
 
     init<Recipe: RecipeType>(_ recipe: Recipe) where Recipe.Input == Input, Recipe.Output == Output {
-        self.getTestCases = { [unowned recipe] in recipe.testCases }
-        self.setTestCases = { [unowned recipe] in recipe.testCases = $0 }
+        self.getTestCases = { [recipe] in recipe.testCases }
+        self.setTestCases = { [recipe] in recipe.testCases = $0 }
     }
 }

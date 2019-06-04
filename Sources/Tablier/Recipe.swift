@@ -14,14 +14,12 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
     public typealias RecipeClosure = (Input, _ completion: Completion) -> Void
 
     let recipe: RecipeClosure
-    let description: String
     let timeout: TimeInterval
 
     var testCases: [TestCase<Input, Output>] = []
 
     public init(description: String = "", timeout: TimeInterval = defaultTimeout, async recipe: @escaping RecipeClosure) {
         self.recipe = recipe
-        self.description = description
         self.timeout = timeout
     }
 
@@ -49,7 +47,8 @@ extension Recipe {
         makeTestCases(when)
 
         let expectations: [T.Expectation] = testCases.map { testCase in
-            let expectation = testable.expectation(description: description, file: testCase.file, line: testCase.line)
+            let (description, file, line) = (testCase.description, testCase.file, testCase.line)
+            let expectation = testable.expectation(description: description, file: file, line: line)
             recipe(testCase.input) { actual in
                 testable.assert(actual: actual, expected: testCase.expected, file: testCase.file, line: testCase.line)
                 expectation.fulfill(testCase.file, line: Int(testCase.line))
