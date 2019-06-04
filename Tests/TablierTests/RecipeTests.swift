@@ -5,54 +5,48 @@ import XCTest
     import Result
 #endif
 
-private struct Foo: Equatable {}
-
-struct MockExpectation: Fullfillable {
-    let mockFullfill: () -> Void
-    func fulfill(_: StaticString, line _: Int) { mockFullfill() }
-}
-
-struct MockTest: Testable {
-    let mockMakeExpectation: (_ description: String) -> Expectation
-    let mockWait: ([MockExpectation], TimeInterval) -> Void
-    let mockAssertSuccess: (Any, Any, StaticString, UInt) -> Void
-    let mockAssertFailure: (Any, Any, StaticString, UInt) -> Void
-
-    func expectation(description: String, file: StaticString, line: UInt) -> MockExpectation {
-        return mockMakeExpectation(description)
-    }
-
-    func wait(for expectations: [MockExpectation], timeout: TimeInterval, enforceOrder: Bool, file: StaticString, line: UInt) {
-        mockWait(expectations, timeout)
-    }
-
-    func assert<Output: Equatable>(actual: Result<Output, AnyError>, expected: Output, file: StaticString, line: UInt) {
-        switch actual {
-        case let .success(actual):
-            mockAssertSuccess(actual, expected, file, line)
-        case let .failure(actual):
-            mockAssertFailure(actual, expected, file, line)
-        }
-    }
-}
-
+struct Foo: Equatable {}
 struct MockError: Error, Equatable {}
 
 final class RecipeTests: XCTestCase {
-    func testSync() {
-        let recipe = Recipe<String, Int> { _ in
-            XCTFail("initializer should not run the actual recipe")
-            return 0
+    func testInitSync() {
+        do {
+            let recipe = Recipe<Foo, Foo> { _ in
+                XCTFail("initializer should not run the actual recipe")
+                return Foo()
+            }
+
+            XCTAssertEqual(recipe.timeout, 0,
+                           "inint(sync:) should have 0 timeout")
         }
 
-        XCTAssertEqual(recipe.timeout, 0)
+        do {
+            let successRecipe = Recipe<Void, Foo> { _ in
+                return Foo()
+            }
+
+            successRecipe.recipe(()) { result in
+                XCTAssertEqual(result.value, Foo(),
+                               "Sync initalizer should pass closure to async initializer")
+            }
+        }
+
+        do {
+            let failureRecipe = Recipe<Foo, Foo> { _ in
+                throw MockError()
+            }
+
+            failureRecipe.recipe(Foo()) { result in
+                XCTAssertEqual(result.error?.error as? MockError, MockError(),
+                               "Sync initalizer should pass closure to async initializer")
+            }
+        }
     }
 
-    func testAsync() {
+    func testInitAsync() {
         do {
-            let recipe = Recipe<String, Int> { _, completion in
+            let recipe = Recipe<Foo, Foo> { _, completion in
                 XCTFail("initializer should not run the actual recipe")
-                completion(.success(0))
             }
 
             XCTAssertEqual(recipe.timeout, 5,
@@ -60,9 +54,9 @@ final class RecipeTests: XCTestCase {
         }
 
         do {
-            let recipe = Recipe<String, Int>(timeout: 100) { _, completion in
+            let recipe = Recipe<Foo, Foo>(timeout: 100) { _, completion in
                 XCTFail("initializer should not run the actual recipe")
-                completion(.success(0))
+                completion(.success(Foo()))
             }
 
             XCTAssertEqual(recipe.timeout, 100,

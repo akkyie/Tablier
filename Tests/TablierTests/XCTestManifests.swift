@@ -6,8 +6,8 @@ extension RecipeTests {
     //   `swift test --generate-linuxmain`
     // to regenerate.
     static let __allTests__RecipeTests = [
-        ("testAsync", testAsync),
-        ("testSync", testSync),
+        ("testInitAsync", testInitAsync),
+        ("testInitSync", testInitSync),
     ]
 }
 
