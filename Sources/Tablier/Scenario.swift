@@ -12,8 +12,6 @@ public final class Scenario<Input, Output: Equatable> {
     public typealias SyncScenario = (Input) throws -> Output
     public typealias AsyncScenario = (Input, _ completion: Completion) -> Void
 
-    var testCases: [TestCase] = []
-
     let scenario: AsyncScenario
     let description: String
     let timeout: TimeInterval
@@ -33,7 +31,12 @@ public final class Scenario<Input, Output: Equatable> {
 }
 
 extension Scenario where Output: Equatable {
-    public func assert<T: Testable>(with testable: T, file: StaticString = #file, line: UInt = #line) {
+    public func assert<T: Testable>(with testable: T, file: StaticString = #file, line: UInt = #line, assertion: (_ when: (Input) -> When) -> Void) {
+        var testCases: [TestCase] = []
+
+        let when: (Input) -> When = { input in When(testCases: &testCases, scenario: self, input: input) }
+        assertion(when)
+
         let expectations: [T.Expectation] = testCases.map { testCase in
             let expectation = testable.expectation(description: description, file: testCase.file, line: testCase.line)
             scenario(testCase.input) { actual in
@@ -42,24 +45,42 @@ extension Scenario where Output: Equatable {
             }
             return expectation
         }
+
         testable.wait(for: expectations, timeout: timeout, enforceOrder: false, file: file, line: line)
     }
 }
 
 extension Scenario {
-    public func when(input: Input) -> Condition {
-        return Condition(scenario: self, input: input)
-    }
-}
-
-extension Scenario {
-    public struct Condition {
-        let scenario: Scenario
+    public final class When {
+        var testCases: [TestCase]
         let input: Input
 
-        public func expect(_ expected: Output, file: StaticString = #file, line: UInt = #line) {
-            let testcase = TestCase(input: input, expected: expected, file: file, line: line)
-            scenario.testCases.append(testcase)
+        init(testCases: inout [TestCase], scenario: Scenario<Input, Output>, input: Input) {
+            self.testCases = testCases
+            self.input = input
+        }
+
+        @discardableResult
+        func expect(_ expected: Output, file: StaticString = #file, line: UInt = #line) -> Expect {
+            return Expect(testCases: &testCases, input: input, expected: expected, file: file, line: line)
+        }
+    }
+
+    public final class Expect {
+        var testCases: [TestCase]
+        var testCase: TestCase
+
+        init(testCases: inout [TestCase], input: Input, expected: Output, file: StaticString, line: UInt) {
+            self.testCases = testCases
+            self.testCase = TestCase(input: input, expected: expected, description: "", file: file, line: line)
+        }
+
+        func with(description: String) {
+            testCase.description = description
+        }
+
+        deinit {
+            testCases.append(testCase)
         }
     }
 }
@@ -68,6 +89,7 @@ extension Scenario {
     public struct TestCase {
         let input: Input
         let expected: Output
+        var description: String
         let file: StaticString
         let line: UInt
     }
