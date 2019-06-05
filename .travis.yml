@@ -8,33 +8,36 @@ notifications:
 matrix:
   include:
     - &swiftpm
-      name: SwiftPM / macOS / Swift 5.0
+      name: SwiftPM / macOS / Swift 4.2
       language: objective-c
       os: osx
-      osx_image: xcode10.2
+      osx_image: xcode10.1
       script:
         - swift --version
-        - swift build
         - swift test
 
     - <<: *swiftpm
-      name: SwiftPM / macOS / Swift 4.2
-      osx_image: xcode10.1
+      name: SwiftPM / macOS / Swift 5.0
+      osx_image: xcode10.2
+      script:
+        - swift --version
+        - swift test
+        - swift test --package-path Examples
 
     - &xcode
-      name: Xcode / macOS / Swift 5.0
+      name: Xcode / macOS / Swift 4.2
       language: objective-c
-      osx_image: xcode10.2
+      osx_image: xcode10.1
       os: osx
       script:
         - swift package generate-xcodeproj --enable-code-coverage
         - xcodebuild build test -project Tablier.xcodeproj -scheme Tablier-Package
-      after_success:
-        - bash <(curl -s https://codecov.io/bash) -X gcov -J '^Tablier$'
 
     - <<: *xcode
-      name: Xcode / macOS / Swift 4.2
-      osx_image: xcode10.1
+      name: Xcode / macOS / Swift 5.0
+      osx_image: xcode10.2
+      after_success:
+        - bash <(curl -s https://codecov.io/bash) -X gcov -J '^Tablier$'
 
     - &linux
       name: Linux / Swift 5.0
@@ -45,5 +48,4 @@ matrix:
         - eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"
       script:
         - swift --version
-        - swift build
         - swift test
