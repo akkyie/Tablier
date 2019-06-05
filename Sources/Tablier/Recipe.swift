@@ -50,7 +50,7 @@ extension Recipe {
             let (description, file, line) = (testCase.description, testCase.file, testCase.line)
             let expectation = testable.expectation(description: description, file: file, line: line)
             recipe(testCase.input) { actual in
-                testable.assert(actual: actual, expected: testCase.expected, file: testCase.file, line: testCase.line)
+                testable.assert(actual: actual, expected: testCase.expected, description: description, file: testCase.file, line: testCase.line)
                 expectation.fulfill(testCase.file, line: Int(testCase.line))
             }
             return expectation

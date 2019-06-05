@@ -10,14 +10,16 @@ extension XCTestCase: Assertable {
     public func assert<Output: Equatable>(
         actual: Result<Output, TablierError>,
         expected: Output,
+        description: String,
         file: StaticString,
         line: UInt
     ) {
         switch actual {
         case let .success(actual):
-            XCTAssertEqual(actual, expected, file: file, line: line)
+            XCTAssertEqual(actual, expected, description, file: file, line: line)
         case let .failure(actual):
-            XCTFail("expected \(expected), but got error: \(actual)", file: file, line: line)
+            let message = ["expected \(expected), but got error: \(actual)", description].joined(separator: " - ")
+            XCTFail(message, file: file, line: line)
         }
     }
 }

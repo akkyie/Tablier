@@ -9,7 +9,7 @@ extension Recipe {
         }
 
         @discardableResult
-        func expect(_ expected: Output, file: StaticString = #file, line: UInt = #line) -> Expect {
+        public func expect(_ expected: Output, file: StaticString = #file, line: UInt = #line) -> Expect {
             return Expect(recipe: recipe, input: input, expected: expected, file: file, line: line)
         }
     }

@@ -10,7 +10,7 @@ extension Recipe {
             self.testCase = TestCase(input: input, expected: expected, description: "", file: file, line: line)
         }
 
-        func with(description: String) {
+        public func with(description: String) {
             testCase.description = description
         }
 
