@@ -3,7 +3,7 @@ import XCTest
 
 @testable import Tablier
 
-struct MockExpectation: Fullfillable {
+struct MockExpectation: Fulfillable {
     let fulfillExpectation: XCTestExpectation?
 
     func fulfill(_ file: StaticString, line: Int) {
@@ -41,6 +41,7 @@ struct MockTest: Testable {
     func assert<Output>(
         actual: Result<Output, TablierError>,
         expected: Output,
+        description: String,
         file: StaticString,
         line: UInt
     ) where Output : Equatable {

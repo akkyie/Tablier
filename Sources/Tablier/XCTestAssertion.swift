@@ -4,7 +4,7 @@ import XCTest
     import Result
 #endif
 
-extension XCTestExpectation: Fullfillable {}
+extension XCTestExpectation: Fulfillable {}
 
 extension XCTestCase: Assertable {
     public func assert<Output: Equatable>(
