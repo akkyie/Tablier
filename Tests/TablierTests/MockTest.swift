@@ -1,5 +1,6 @@
 import Foundation
 import XCTest
+import Result
 
 @testable import Tablier
 
