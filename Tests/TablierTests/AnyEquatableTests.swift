@@ -1,7 +1,7 @@
 @testable import Tablier
 import XCTest
 
-fileprivate struct Foo: Equatable {}
+private struct Foo: Equatable {}
 
 final class AnyEquatableTests: XCTestCase {
     func testEquatableConformance() {

@@ -18,14 +18,13 @@ extension Recipe {
         }
 
         @discardableResult
-        public func expect<T: Equatable>(
-            _ keyPath: KeyPath<Output, T>,
-            _ expected: T,
-            description makeDescription: @autoclosure () -> String = "",
-            file: StaticString = #file,
-            line: UInt = #line
-        ) -> Self {
+        public func expect<T: Equatable>(_ keyPath: KeyPath<Output, T>, _ expected: T,
+                                         description makeDescription: @autoclosure () -> String = "",
+                                         file: StaticString = #file, line: UInt = #line) -> Self {
+            // swiftlint:disable todo
             // TODO: currently the description of a KeyPath gives us not much useful information, so ignore it for now
+            // and SwiftLint is disabled here because it's unpredictable when this TODO is removed
+
             let testCase = TestCase<Input, Output>(
                 input: input,
                 filter: { output in AnyEquatable(output[keyPath: keyPath]) },

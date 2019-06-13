@@ -18,17 +18,22 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
 
     var testCases: [TestCase<Input, Output>] = []
 
-    public init(description: String = "", timeout: TimeInterval = defaultTimeout, async recipe: @escaping RecipeClosure) {
+    public init(description: String = "", timeout: TimeInterval = defaultTimeout,
+                async recipe: @escaping RecipeClosure) {
         self.recipe = recipe
         self.timeout = timeout
     }
 
-    public convenience init(description: String = "", sync recipe: @escaping (Input) throws -> Output) {
+    public convenience init(description: String = "",
+                            sync recipe: @escaping (Input) throws -> Output) {
         self.init(description: description, timeout: 0, async: { input, completion in
             let actual = Result<Output, AnyError>(catching: {
                 let actual: Output
-                do { actual = try recipe(input) }
-                catch let error { throw AnyError(error) }
+                do {
+                    actual = try recipe(input)
+                } catch let error {
+                    throw AnyError(error)
+                }
                 return actual
             })
             return completion(actual)
@@ -37,12 +42,8 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
 }
 
 extension Recipe {
-    public func assert<T: Testable>(
-        with testable: T,
-        file: StaticString = #file,
-        line: UInt = #line,
-        assertion makeTestCases: (_ when: (Input) -> When) -> Void
-    ) {
+    public func assert<T: Testable>(with testable: T, file: StaticString = #file, line: UInt = #line,
+                                    assertion makeTestCases: (_ when: (Input) -> When) -> Void) {
         let when: (Input) -> When = { input in When(recipe: self, input: input) }
         makeTestCases(when)
 
@@ -52,9 +53,21 @@ extension Recipe {
             recipe(testCase.input) { actual in
                 switch actual {
                 case let .success(actual):
-                    testable.assert(actual: testCase.filter(actual), expected: testCase.expected, description: description, file: testCase.file, line: testCase.line)
+                    testable.assert(
+                        actual: testCase.filter(actual),
+                        expected: testCase.expected,
+                        description: description,
+                        file: testCase.file,
+                        line: testCase.line
+                    )
                 case let .failure(error):
-                    testable.fail(error: error, expected: testCase.expected, description: description, file: testCase.file, line: testCase.line)
+                    testable.fail(
+                        error: error,
+                        expected: testCase.expected,
+                        description: description,
+                        file: testCase.file,
+                        line: testCase.line
+                    )
                 }
                 expectation.fulfill(testCase.file, line: Int(testCase.line))
             }

@@ -32,13 +32,11 @@ struct MockTest: Testable {
         self.waitExpectation = nil
     }
 
-    init(
-        assertExpectation: XCTestExpectation,
-        failExpectation: XCTestExpectation,
-        expectationExpectation: XCTestExpectation,
-        fulfillExpectation: XCTestExpectation,
-        waitExpectation: XCTestExpectation
-    ) {
+    init(assertExpectation: XCTestExpectation,
+         failExpectation: XCTestExpectation,
+         expectationExpectation: XCTestExpectation,
+         fulfillExpectation: XCTestExpectation,
+         waitExpectation: XCTestExpectation) {
         self.assertExpectation = assertExpectation
         self.failExpectation = failExpectation
         self.expectationExpectation = expectationExpectation
@@ -46,23 +44,13 @@ struct MockTest: Testable {
         self.waitExpectation = waitExpectation
     }
 
-    func assert(
-        actual: AnyEquatable,
-        expected: AnyEquatable,
-        description: String,
-        file: StaticString,
-        line: UInt
-    ) {
+    func assert(actual: AnyEquatable, expected: AnyEquatable,
+                description: String, file: StaticString, line: UInt) {
         assertExpectation?.fulfill()
     }
 
-    func fail(
-        error: AnyError,
-        expected: AnyEquatable,
-        description: String,
-        file: StaticString,
-        line: UInt
-    ) {
+    func fail(error: AnyError, expected: AnyEquatable,
+              description: String, file: StaticString, line: UInt) {
         failExpectation?.fulfill()
     }
 
@@ -71,13 +59,8 @@ struct MockTest: Testable {
         return MockExpectation(fulfillExpectation: fulfillExpectation)
     }
 
-    func wait(
-        for expectations: [MockExpectation],
-        timeout: TimeInterval,
-        enforceOrder: Bool,
-        file: StaticString,
-        line: UInt
-    ) {
+    func wait(for expectations: [MockExpectation], timeout: TimeInterval, enforceOrder: Bool,
+              file: StaticString, line: UInt) {
         waitExpectation?.fulfill()
     }
 }

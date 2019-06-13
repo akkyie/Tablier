@@ -5,8 +5,8 @@ import XCTest
 import Result
 #endif
 
-fileprivate struct Foo: Equatable {}
-fileprivate struct StubError: Error, Equatable {}
+private struct Foo: Equatable {}
+private struct StubError: Error, Equatable {}
 
 final class RecipeTests: XCTestCase {
     func testInitSync() {
@@ -45,7 +45,7 @@ final class RecipeTests: XCTestCase {
 
     func testInitAsync() {
         do {
-            let recipe = Recipe<Foo, Foo> { _, completion in
+            let recipe = Recipe<Foo, Foo> { _, _ in
                 XCTFail("initializer should not run the actual recipe")
             }
 
@@ -67,7 +67,7 @@ final class RecipeTests: XCTestCase {
     func testAssertInit() {
         let mockTest = MockTest()
 
-        let recipe = Recipe<Foo, Foo> { _, completion in
+        let recipe = Recipe<Foo, Foo> { _, _ in
             XCTFail("initializer should not run when no test case is added")
         }
 
@@ -111,7 +111,6 @@ final class RecipeTests: XCTestCase {
             waitExpectation,
             ], timeout: 0.1, enforceOrder: true)
     }
-
 
     func testAssertFail() {
         let expectationExpectation = expectation(description: "expectation")
@@ -170,7 +169,7 @@ final class RecipeTests: XCTestCase {
             waitExpectation: waitExpectation
         )
 
-        let recipe = Recipe<String, String> { input, completion in
+        let recipe = Recipe<String, String> { input, _ in
             XCTAssertEqual(input, "input",
                            "assert(with:) should run the recipe")
             recipeExpectatation.fulfill()

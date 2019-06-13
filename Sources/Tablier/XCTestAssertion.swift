@@ -7,23 +7,13 @@ import XCTest
 extension XCTestExpectation: Fulfillable {}
 
 extension XCTestCase: Assertable {
-    public func assert(
-        actual: AnyEquatable,
-        expected: AnyEquatable,
-        description: String,
-        file: StaticString,
-        line: UInt
-    ) {
+    public func assert(actual: AnyEquatable, expected: AnyEquatable,
+                       description: String, file: StaticString, line: UInt) {
         XCTAssertEqual(actual, expected, description, file: file, line: line)
     }
 
-    public func fail(
-        error: AnyError,
-        expected: AnyEquatable,
-        description: String,
-        file: StaticString,
-        line: UInt
-    ) {
+    public func fail(error: AnyError, expected: AnyEquatable,
+                     description: String, file: StaticString, line: UInt) {
         XCTFail("expected: \(expected) - \(description)", file: file, line: line)
     }
 }
@@ -51,13 +41,15 @@ extension XCTestExpectation {
 }
 
 extension XCTestCase {
-    public func wait(for expectations: [XCTestExpectation], timeout: TimeInterval, enforceOrder: Bool, file: StaticString, line: UInt) {
+    public func wait(for expectations: [XCTestExpectation], timeout: TimeInterval, enforceOrder: Bool,
+                     file: StaticString, line: UInt) {
         wait(for: expectations, timeout: timeout, enforceOrder: enforceOrder)
     }
 }
 #else
 extension XCTestCase {
-    public func wait(for expectations: [XCTestExpectation], timeout: TimeInterval, enforceOrder: Bool, file: StaticString, line: UInt) {
+    public func wait(for expectations: [XCTestExpectation], timeout: TimeInterval, enforceOrder: Bool,
+                     file: StaticString, line: UInt) {
         wait(for: expectations, timeout: timeout, enforceOrder: enforceOrder, file: file, line: Int(line))
     }
 }
