@@ -1,6 +1,7 @@
 public struct TestCase<Input, Output> {
     let input: Input
-    let expected: Output
+    let filter: (Output) -> AnyEquatable
+    let expected: AnyEquatable
     var description: String
     let file: StaticString
     let line: UInt

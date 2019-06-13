@@ -1,9 +1,12 @@
 @testable import Tablier
 import XCTest
-import Result
 
-struct Foo: Equatable {}
-struct MockError: Error, Equatable {}
+#if canImport(Result)
+import Result
+#endif
+
+private struct Foo: Equatable {}
+private struct StubError: Error, Equatable {}
 
 final class RecipeTests: XCTestCase {
     func testInitSync() {
@@ -30,11 +33,11 @@ final class RecipeTests: XCTestCase {
 
         do {
             let failureRecipe = Recipe<Foo, Foo> { _ in
-                throw MockError()
+                throw StubError()
             }
 
             failureRecipe.recipe(Foo()) { result in
-                XCTAssertEqual(result.error?.error as? MockError, MockError(),
+                XCTAssertEqual(result.error?.error as? StubError, StubError(),
                                "Sync initalizer should pass closure to async initializer")
             }
         }
@@ -42,7 +45,7 @@ final class RecipeTests: XCTestCase {
 
     func testInitAsync() {
         do {
-            let recipe = Recipe<Foo, Foo> { _, completion in
+            let recipe = Recipe<Foo, Foo> { _, _ in
                 XCTFail("initializer should not run the actual recipe")
             }
 
@@ -64,22 +67,25 @@ final class RecipeTests: XCTestCase {
     func testAssertInit() {
         let mockTest = MockTest()
 
-        let recipe = Recipe<Foo, Foo> { _, completion in
+        let recipe = Recipe<Foo, Foo> { _, _ in
             XCTFail("initializer should not run when no test case is added")
         }
 
         recipe.assert(with: mockTest) { _ in }
     }
 
-    func testAssertCompleted() {
+    func testAssertSucceed() {
         let expectationExpectation = expectation(description: "expectation")
         let recipeExpectatation = expectation(description: "recipe")
         let assertExpectation = expectation(description: "assert")
+        let failExpectation = expectation(description: "fail")
+        failExpectation.isInverted = true
         let fulfillExpectation = expectation(description: "fulfill")
         let waitExpectation = expectation(description: "wait")
 
         let mockTest = MockTest(
             assertExpectation: assertExpectation,
+            failExpectation: failExpectation,
             expectationExpectation: expectationExpectation,
             fulfillExpectation: fulfillExpectation,
             waitExpectation: waitExpectation
@@ -100,28 +106,70 @@ final class RecipeTests: XCTestCase {
             expectationExpectation,
             recipeExpectatation,
             assertExpectation,
+            failExpectation,
             fulfillExpectation,
             waitExpectation,
-        ], timeout: 0.1, enforceOrder: true)
+            ], timeout: 0.1, enforceOrder: true)
     }
 
-    func testAssertNotCompelted() {
+    func testAssertFail() {
         let expectationExpectation = expectation(description: "expectation")
         let recipeExpectatation = expectation(description: "recipe")
         let assertExpectation = expectation(description: "assert")
         assertExpectation.isInverted = true
+        let failExpectation = expectation(description: "fail")
         let fulfillExpectation = expectation(description: "fulfill")
-        fulfillExpectation.isInverted = true
         let waitExpectation = expectation(description: "wait")
 
         let mockTest = MockTest(
             assertExpectation: assertExpectation,
+            failExpectation: failExpectation,
             expectationExpectation: expectationExpectation,
             fulfillExpectation: fulfillExpectation,
             waitExpectation: waitExpectation
         )
 
         let recipe = Recipe<String, String> { input, completion in
+            XCTAssertEqual(input, "input",
+                           "assert(with:) should run the recipe")
+            recipeExpectatation.fulfill()
+            completion(.failure(AnyError(StubError())))
+        }
+
+        recipe.assert(with: mockTest) { when in
+            when("input").expect("expected")
+        }
+
+        wait(for: [
+            expectationExpectation,
+            recipeExpectatation,
+            assertExpectation,
+            failExpectation,
+            fulfillExpectation,
+            waitExpectation,
+            ], timeout: 0.1, enforceOrder: true)
+    }
+
+    func testAssertNotComplete() {
+        let expectationExpectation = expectation(description: "expectation")
+        let recipeExpectatation = expectation(description: "recipe")
+        let assertExpectation = expectation(description: "assert")
+        assertExpectation.isInverted = true
+        let failExpectation = expectation(description: "fail")
+        failExpectation.isInverted = true
+        let fulfillExpectation = expectation(description: "fulfill")
+        fulfillExpectation.isInverted = true
+        let waitExpectation = expectation(description: "wait")
+
+        let mockTest = MockTest(
+            assertExpectation: assertExpectation,
+            failExpectation: failExpectation,
+            expectationExpectation: expectationExpectation,
+            fulfillExpectation: fulfillExpectation,
+            waitExpectation: waitExpectation
+        )
+
+        let recipe = Recipe<String, String> { input, _ in
             XCTAssertEqual(input, "input",
                            "assert(with:) should run the recipe")
             recipeExpectatation.fulfill()
@@ -135,6 +183,7 @@ final class RecipeTests: XCTestCase {
             expectationExpectation,
             recipeExpectatation,
             assertExpectation,
+            failExpectation,
             fulfillExpectation,
             waitExpectation,
         ], timeout: 0.1, enforceOrder: true)

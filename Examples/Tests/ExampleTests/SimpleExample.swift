@@ -3,7 +3,8 @@ import Tablier
 
 @testable import Example
 
-final class ExamplesTests: XCTestCase {
+/// SimpleExample
+final class PluralizeTests: XCTestCase {
     func testPluralize() {
         let recipe = Recipe<String, String>(sync: { input in
             return try pluralize(word: input)
@@ -14,11 +15,12 @@ final class ExamplesTests: XCTestCase {
             when("banana").expect("bananas")
             when("chocolate").expect("chocolates")
 
-            when("leaf").expect("leaves").with(description: "end with -f")
-            when("knife").expect("knives").with(description: "end with -fe")
-            when("tomato").expect("tomatoes").with(description: "end with -o")
+            when("leaf").expect("leaves", description: "end with -f")
+            when("knife").expect("knives", description: "end with -fe")
+            when("tomato").expect("tomatoes", description: "end with -o")
 
-            // when("foot").expect("feet").with(description: "irregular!")
+            // uncomment to see error
+            // when("foot").expect("feet", description: "irregular one")
         }
     }
 }

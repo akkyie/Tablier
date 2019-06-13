@@ -5,4 +5,4 @@
 
 A micro-framework for Table Driven Testing.
 
-<img width="100%" alt="An example screenshot to illustrate how Tablier works" src="https://user-images.githubusercontent.com/1528813/58963764-b4faab80-87e8-11e9-9f9b-d502cec3c67d.png">
+<img width="100%" alt="An example screenshot to illustrate how Tablier works" src="https://user-images.githubusercontent.com/1528813/59454295-b5302200-8e4c-11e9-9874-0d05e811a64f.png">
