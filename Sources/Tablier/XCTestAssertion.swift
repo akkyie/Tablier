@@ -7,33 +7,39 @@ import XCTest
 extension XCTestExpectation: Fulfillable {}
 
 extension XCTestCase: Assertable {
-    public func assert<Output: Equatable>(
-        actual: Result<Output, TablierError>,
-        expected: Output,
+    public func assert(
+        actual: AnyEquatable,
+        expected: AnyEquatable,
         description: String,
         file: StaticString,
         line: UInt
     ) {
-        switch actual {
-        case let .success(actual):
-            XCTAssertEqual(actual, expected, description, file: file, line: line)
-        case let .failure(actual):
-            let message = ["expected \(expected), but got error: \(actual)", description].joined(separator: " - ")
-            XCTFail(message, file: file, line: line)
-        }
+        XCTAssertEqual(actual, expected, description, file: file, line: line)
+    }
+
+    public func fail(
+        error: AnyError,
+        expected: AnyEquatable,
+        description: String,
+        file: StaticString,
+        line: UInt
+    ) {
+        XCTFail("expected: \(expected) - \(description)", file: file, line: line)
     }
 }
 
 extension XCTestCase: Waitable {
     public typealias Expectation = XCTestExpectation
 
+    #if os(macOS)
     public func expectation(description: String, file: StaticString, line: UInt) -> XCTestExpectation {
-        #if os(macOS)
         return expectation(description: description)
-        #else
-        return XCTestExpectation(description: description, file: file, line: Int(line))
-        #endif
     }
+    #else
+    public func expectation(description: String, file: StaticString, line: UInt) -> XCTestExpectation {
+        return XCTestExpectation(description: description, file: file, line: Int(line))
+    }
+    #endif
 }
 
 // Shim for the difference between swift-corelibs-xctest and XCTest

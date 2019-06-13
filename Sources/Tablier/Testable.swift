@@ -11,7 +11,8 @@ public protocol Fulfillable {
 }
 
 public protocol Assertable {
-    func assert<Output: Equatable>(actual: Result<Output, TablierError>, expected: Output, description: String, file: StaticString, line: UInt)
+    func assert(actual: AnyEquatable, expected: AnyEquatable, description: String, file: StaticString, line: UInt)
+    func fail(error: AnyError, expected: AnyEquatable, description: String, file: StaticString, line: UInt)
 }
 
 public protocol Waitable {

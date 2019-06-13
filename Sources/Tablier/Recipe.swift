@@ -10,7 +10,7 @@ protocol RecipeType: AnyObject {
 public final class Recipe<Input, Output: Equatable>: RecipeType {
     public static var defaultTimeout: TimeInterval { return 5 }
 
-    public typealias Completion = (Result<Output, TablierError>) -> Void
+    public typealias Completion = (Result<Output, AnyError>) -> Void
     public typealias RecipeClosure = (Input, _ completion: Completion) -> Void
 
     let recipe: RecipeClosure
@@ -25,10 +25,10 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
 
     public convenience init(description: String = "", sync recipe: @escaping (Input) throws -> Output) {
         self.init(description: description, timeout: 0, async: { input, completion in
-            let actual = Result<Output, TablierError>(catching: {
+            let actual = Result<Output, AnyError>(catching: {
                 let actual: Output
                 do { actual = try recipe(input) }
-                catch let error { throw TablierError(error) }
+                catch let error { throw AnyError(error) }
                 return actual
             })
             return completion(actual)
@@ -50,7 +50,12 @@ extension Recipe {
             let (description, file, line) = (testCase.description, testCase.file, testCase.line)
             let expectation = testable.expectation(description: description, file: file, line: line)
             recipe(testCase.input) { actual in
-                testable.assert(actual: actual, expected: testCase.expected, description: description, file: testCase.file, line: testCase.line)
+                switch actual {
+                case let .success(actual):
+                    testable.assert(actual: testCase.filter(actual), expected: testCase.expected, description: description, file: testCase.file, line: testCase.line)
+                case let .failure(error):
+                    testable.fail(error: error, expected: testCase.expected, description: description, file: testCase.file, line: testCase.line)
+                }
                 expectation.fulfill(testCase.file, line: Int(testCase.line))
             }
             return expectation
