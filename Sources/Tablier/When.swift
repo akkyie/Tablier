@@ -46,7 +46,18 @@ extension Recipe {
             file: StaticString = #file,
             line: UInt = #line
         ) -> Self {
-            return expect(\.self, expected, description: makeDescription(), file: file, line: line)
+            // Reimplementation here because \.self is not available with Swift 4
+            let testCase = TestCase<Input, Output>(
+                input: input,
+                filter: { output in AnyEquatable(output) },
+                expected: AnyEquatable(expected),
+                description: makeDescription(),
+                file: file,
+                line: line
+            )
+
+            testCases.append(testCase)
+            return self
         }
 
         public func omit() {
