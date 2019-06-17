@@ -43,8 +43,8 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
 
 extension Recipe {
     public func assert<T: Testable>(with testable: T, file: StaticString = #file, line: UInt = #line,
-                                    assertion makeTestCases: (_ when: (Input) -> When) -> Void) {
-        let when: (Input) -> When = { input in When(recipe: self, input: input) }
+                                    assertion makeTestCases: (_ when: (Input...) -> When) -> Void) {
+        let when: (Input...) -> When = { (inputs: Input...) -> When in When(recipe: self, inputs: inputs) }
         makeTestCases(when)
 
         let expectations: [T.Expectation] = testCases.map { testCase in

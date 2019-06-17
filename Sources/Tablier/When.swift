@@ -5,12 +5,12 @@ import Result
 extension Recipe {
     public final class When {
         let recipe: AnyRecipe<Input, Output>
-        let input: Input
+        let inputs: [Input]
         var testCases: [TestCase<Input, Output>] = []
 
-        init<Recipe: RecipeType>(recipe: Recipe, input: Input) where Recipe.Input == Input, Recipe.Output == Output {
+        init<Recipe: RecipeType>(recipe: Recipe, inputs: [Input]) where Recipe.Input == Input, Recipe.Output == Output {
             self.recipe = AnyRecipe(recipe)
-            self.input = input
+            self.inputs = inputs
         }
 
         deinit {
@@ -25,17 +25,19 @@ extension Recipe {
             // TODO: currently the description of a KeyPath gives us not much useful information, so ignore it for now
             // and SwiftLint is disabled here because it's unpredictable when this TODO is removed
 
-            let testCase = TestCase<Input, Output>(
-                input: input,
-                filter: { output in AnyEquatable(output[keyPath: keyPath]) },
-                expected: AnyEquatable(expected),
-                description: makeDescription(),
-                // keyPathDescription: "\(keyPath)",
-                file: file,
-                line: line
-            )
+            for input in inputs {
+                let testCase = TestCase<Input, Output>(
+                    input: input,
+                    filter: { output in AnyEquatable(output[keyPath: keyPath]) },
+                    expected: AnyEquatable(expected),
+                    description: makeDescription(),
+                    // keyPathDescription: "\(keyPath)",
+                    file: file,
+                    line: line
+                )
+                testCases.append(testCase)
+            }
 
-            testCases.append(testCase)
             return self
         }
 
@@ -47,16 +49,19 @@ extension Recipe {
             line: UInt = #line
         ) -> Self {
             // Reimplementation here because \.self is not available with Swift 4
-            let testCase = TestCase<Input, Output>(
-                input: input,
-                filter: { output in AnyEquatable(output) },
-                expected: AnyEquatable(expected),
-                description: makeDescription(),
-                file: file,
-                line: line
-            )
+            for input in inputs {
+                let testCase = TestCase<Input, Output>(
+                    input: input,
+                    filter: { output in AnyEquatable(output) },
+                    expected: AnyEquatable(expected),
+                    description: makeDescription(),
+                    // keyPathDescription: "\(keyPath)",
+                    file: file,
+                    line: line
+                )
+                testCases.append(testCase)
+            }
 
-            testCases.append(testCase)
             return self
         }
 
