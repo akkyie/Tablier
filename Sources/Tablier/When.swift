@@ -1,72 +1,32 @@
-#if canImport(Result)
-import Result
-#endif
+public final class When<Input, Output: Equatable> {
+    let recipe: AnyRecipe<Input, Output>
+    let inputs: [Input]
+    let file: StaticString
+    let line: UInt
+    var descriptions: [String] = []
 
-extension Recipe {
-    public final class When {
-        let recipe: AnyRecipe<Input, Output>
-        let inputs: [Input]
-        var testCases: [TestCase<Input, Output>] = []
+    init<Recipe: RecipeType>(recipe: Recipe, inputs: [Input], file: StaticString, line: UInt)
+    where Recipe.Input == Input, Recipe.Output == Output {
+        self.recipe = AnyRecipe(recipe)
+        self.inputs = inputs
+        self.file = file
+        self.line = line
+    }
 
-        init<Recipe: RecipeType>(recipe: Recipe, inputs: [Input]) where Recipe.Input == Input, Recipe.Output == Output {
-            self.recipe = AnyRecipe(recipe)
-            self.inputs = inputs
-        }
+    public func withDescription(_ description: String) -> Self {
+        self.descriptions.append(description)
+        return self
+    }
 
-        deinit {
-            recipe.testCases.append(contentsOf: testCases)
-        }
-
-        @discardableResult
-        public func expect<T: Equatable>(_ keyPath: KeyPath<Output, T>, _ expected: T,
-                                         description makeDescription: @autoclosure () -> String = "",
-                                         file: StaticString = #file, line: UInt = #line) -> Self {
-            // swiftlint:disable todo
-            // TODO: currently the description of a KeyPath gives us not much useful information, so ignore it for now
-            // and SwiftLint is disabled here because it's unpredictable when this TODO is removed
-
-            for input in inputs {
-                let testCase = TestCase<Input, Output>(
-                    input: input,
-                    filter: { output in AnyEquatable(output[keyPath: keyPath]) },
-                    expected: AnyEquatable(expected),
-                    description: makeDescription(),
-                    // keyPathDescription: "\(keyPath)",
-                    file: file,
-                    line: line
-                )
-                testCases.append(testCase)
-            }
-
-            return self
-        }
-
-        @discardableResult
-        public func expect(
-            _ expected: Output,
-            description makeDescription: @autoclosure () -> String = "",
-            file: StaticString = #file,
-            line: UInt = #line
-        ) -> Self {
-            // Reimplementation here because \.self is not available with Swift 4
-            for input in inputs {
-                let testCase = TestCase<Input, Output>(
-                    input: input,
-                    filter: { output in AnyEquatable(output) },
-                    expected: AnyEquatable(expected),
-                    description: makeDescription(),
-                    // keyPathDescription: "\(keyPath)",
-                    file: file,
-                    line: line
-                )
-                testCases.append(testCase)
-            }
-
-            return self
-        }
-
-        public func omit() {
-            testCases = []
-        }
+    @discardableResult
+    public func expect(_ expected: Output) -> Expect<Input, Output> {
+        return Expect(
+            recipe: recipe,
+            inputs: inputs,
+            expected: expected,
+            descriptions: descriptions,
+            file: file,
+            line: line
+        )
     }
 }

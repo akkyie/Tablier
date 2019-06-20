@@ -1,19 +1,64 @@
 @testable import Tablier
 import XCTest
 
-#if canImport(Result)
-import Result
-#endif
-
-private struct Foo: Equatable {}
 private struct StubError: Error, Equatable {}
 
 final class RecipeTests: XCTestCase {
-    func testInitSync() {
+    func testInitClosure() {
         do {
-            let recipe = Recipe<Foo, Foo> { _ in
+            let recipe = Recipe<String, String> { _, completion in
+                completion("result", nil)
+            }
+
+            recipe.recipe("input") { (actual, error) in
+                XCTAssertEqual(actual, "result",
+                               "recipe should have the clousure passed by its initializer")
+                XCTAssertNil(error)
+            }
+        }
+
+        do {
+            let recipe = Recipe<String, String> { _, completion in
+                completion(nil, StubError())
+            }
+
+            recipe.recipe("input") { (actual, error) in
+                XCTAssertNil(actual)
+                XCTAssertEqual(error as? StubError, StubError(),
+                               "recipe should have the clousure passed by its initializer")
+            }
+        }
+
+        do {
+            let successRecipe = Recipe<String, String> { _ in
+                return "result"
+            }
+
+            successRecipe.recipe("input") { (actual, error) in
+                XCTAssertEqual(actual, "result",
+                               "Sync initalizer should pass closure to async initializer")
+                XCTAssertNil(error)
+            }
+        }
+
+        do {
+            let failureRecipe = Recipe<String, String> { _ in
+                throw StubError()
+            }
+
+            failureRecipe.recipe("input") { (actual, error) in
+                XCTAssertNil(actual)
+                XCTAssertEqual(error as? StubError, StubError(),
+                               "Sync initalizer should pass closure to async initializer")
+            }
+        }
+    }
+
+    func testInitTimeout() {
+        do {
+            let recipe = Recipe<String, String> { _ in
                 XCTFail("initializer should not run the actual recipe")
-                return Foo()
+                return "result"
             }
 
             XCTAssertEqual(recipe.timeout, 0,
@@ -21,31 +66,7 @@ final class RecipeTests: XCTestCase {
         }
 
         do {
-            let successRecipe = Recipe<Void, Foo> { _ in
-                return Foo()
-            }
-
-            successRecipe.recipe(()) { result in
-                XCTAssertEqual(result.value, Foo(),
-                               "Sync initalizer should pass closure to async initializer")
-            }
-        }
-
-        do {
-            let failureRecipe = Recipe<Foo, Foo> { _ in
-                throw StubError()
-            }
-
-            failureRecipe.recipe(Foo()) { result in
-                XCTAssertEqual(result.error?.error as? StubError, StubError(),
-                               "Sync initalizer should pass closure to async initializer")
-            }
-        }
-    }
-
-    func testInitAsync() {
-        do {
-            let recipe = Recipe<Foo, Foo> { _, _ in
+            let recipe = Recipe<String, String> { _, _ in
                 XCTFail("initializer should not run the actual recipe")
             }
 
@@ -54,9 +75,8 @@ final class RecipeTests: XCTestCase {
         }
 
         do {
-            let recipe = Recipe<Foo, Foo>(timeout: 100) { _, completion in
+            let recipe = Recipe<String, String>(timeout: 100) { _, _ in
                 XCTFail("initializer should not run the actual recipe")
-                completion(.success(Foo()))
             }
 
             XCTAssertEqual(recipe.timeout, 100,
@@ -67,125 +87,158 @@ final class RecipeTests: XCTestCase {
     func testAssertInit() {
         let mockTest = MockTest()
 
-        let recipe = Recipe<Foo, Foo> { _, _ in
+        let recipe = Recipe<String, String> { _, _ in
             XCTFail("initializer should not run when no test case is added")
         }
 
         recipe.assert(with: mockTest) { _ in }
     }
 
-    func testAssertSucceed() {
-        let expectationExpectation = expectation(description: "expectation")
-        let recipeExpectatation = expectation(description: "recipe")
-        let assertExpectation = expectation(description: "assert")
-        let failExpectation = expectation(description: "fail")
+    func testPassingAssert() {
+        let expectationExpectation = expectation(description: "`expectation` should be called")
+        let failExpectation = expectation(description: "`fail` should NOT be called")
         failExpectation.isInverted = true
-        let fulfillExpectation = expectation(description: "fulfill")
-        let waitExpectation = expectation(description: "wait")
+        let fulfillExpectation = expectation(description: "`fulfill` should be called")
+        let waitExpectation = expectation(description: "`wait` should be called")
 
         let mockTest = MockTest(
-            assertExpectation: assertExpectation,
-            failExpectation: failExpectation,
-            expectationExpectation: expectationExpectation,
-            fulfillExpectation: fulfillExpectation,
-            waitExpectation: waitExpectation
+            didCallFail: { failExpectation.fulfill() },
+            didCallExpectation: { expectationExpectation.fulfill() },
+            didCallWait: { waitExpectation.fulfill() },
+            didCallFulfill: { fulfillExpectation.fulfill() }
         )
 
-        let recipe = Recipe<String, String> { input, completion in
-            XCTAssertEqual(input, "input",
-                           "assert(with:) should run the recipe")
-            recipeExpectatation.fulfill()
-            completion(.success("actual"))
+        let recipe = Recipe<String, String> { _, completion in
+            completion("expected", nil)
         }
 
-        recipe.assert(with: mockTest) { when in
-            when("input").expect("expected")
+        recipe.assert(with: mockTest) {
+            $0.when("input").expect("expected")
         }
 
         wait(for: [
             expectationExpectation,
-            recipeExpectatation,
-            assertExpectation,
-            failExpectation,
-            fulfillExpectation,
-            waitExpectation,
-            ], timeout: 0.1, enforceOrder: true)
-    }
-
-    func testAssertFail() {
-        let expectationExpectation = expectation(description: "expectation")
-        let recipeExpectatation = expectation(description: "recipe")
-        let assertExpectation = expectation(description: "assert")
-        assertExpectation.isInverted = true
-        let failExpectation = expectation(description: "fail")
-        let fulfillExpectation = expectation(description: "fulfill")
-        let waitExpectation = expectation(description: "wait")
-
-        let mockTest = MockTest(
-            assertExpectation: assertExpectation,
-            failExpectation: failExpectation,
-            expectationExpectation: expectationExpectation,
-            fulfillExpectation: fulfillExpectation,
-            waitExpectation: waitExpectation
-        )
-
-        let recipe = Recipe<String, String> { input, completion in
-            XCTAssertEqual(input, "input",
-                           "assert(with:) should run the recipe")
-            recipeExpectatation.fulfill()
-            completion(.failure(AnyError(StubError())))
-        }
-
-        recipe.assert(with: mockTest) { when in
-            when("input").expect("expected")
-        }
-
-        wait(for: [
-            expectationExpectation,
-            recipeExpectatation,
-            assertExpectation,
-            failExpectation,
-            fulfillExpectation,
-            waitExpectation,
-            ], timeout: 0.1, enforceOrder: true)
-    }
-
-    func testAssertNotComplete() {
-        let expectationExpectation = expectation(description: "expectation")
-        let recipeExpectatation = expectation(description: "recipe")
-        let assertExpectation = expectation(description: "assert")
-        assertExpectation.isInverted = true
-        let failExpectation = expectation(description: "fail")
-        failExpectation.isInverted = true
-        let fulfillExpectation = expectation(description: "fulfill")
-        fulfillExpectation.isInverted = true
-        let waitExpectation = expectation(description: "wait")
-
-        let mockTest = MockTest(
-            assertExpectation: assertExpectation,
-            failExpectation: failExpectation,
-            expectationExpectation: expectationExpectation,
-            fulfillExpectation: fulfillExpectation,
-            waitExpectation: waitExpectation
-        )
-
-        let recipe = Recipe<String, String> { input, _ in
-            XCTAssertEqual(input, "input",
-                           "assert(with:) should run the recipe")
-            recipeExpectatation.fulfill()
-        }
-
-        recipe.assert(with: mockTest) { when in
-            when("input").expect("expected")
-        }
-
-        wait(for: [
-            expectationExpectation,
-            recipeExpectatation,
-            assertExpectation,
             failExpectation,
             fulfillExpectation,
             waitExpectation,
         ], timeout: 0.1, enforceOrder: true)
+    }
+
+    func testFailingAssert() {
+        let expectationExpectation = expectation(description: "`expectation` should be called")
+        let failExpectation = expectation(description: "`fail` should be called")
+        let fulfillExpectation = expectation(description: "`fulfill` should be called")
+        let waitExpectation = expectation(description: "`wait` should be called")
+
+        let mockTest = MockTest(
+            didCallFail: { failExpectation.fulfill() },
+            didCallExpectation: { expectationExpectation.fulfill() },
+            didCallWait: { waitExpectation.fulfill() },
+            didCallFulfill: { fulfillExpectation.fulfill() }
+        )
+
+        let recipe = Recipe<String, String> { _, completion in
+            completion("FOOBAR", nil)
+        }
+
+        recipe.assert(with: mockTest) {
+            $0.when("input").expect("expected")
+        }
+
+        wait(for: [
+            expectationExpectation,
+            failExpectation,
+            fulfillExpectation,
+            waitExpectation,
+            ], timeout: 0.1, enforceOrder: true)
+    }
+
+    func testErrorAssert() {
+        let expectationExpectation = expectation(description: "`expectation` should be called")
+        let failExpectation = expectation(description: "`fail` should be called")
+        let fulfillExpectation = expectation(description: "`fulfill` should be called")
+        let waitExpectation = expectation(description: "`wait` should be called")
+
+        let mockTest = MockTest(
+            didCallFail: { failExpectation.fulfill() },
+            didCallExpectation: { expectationExpectation.fulfill() },
+            didCallWait: { waitExpectation.fulfill() },
+            didCallFulfill: { fulfillExpectation.fulfill() }
+        )
+
+        let recipe = Recipe<String, String> { _, completion in
+            completion(nil, StubError())
+        }
+
+        recipe.assert(with: mockTest) {
+            $0.when("input").expect("expected")
+        }
+
+        wait(for: [
+            expectationExpectation,
+            failExpectation,
+            fulfillExpectation,
+            waitExpectation,
+            ], timeout: 0.1, enforceOrder: true)
+    }
+
+    func testInvalidCompletion() {
+        do { // both actual and error is given
+            let expectationExpectation = expectation(description: "`expectation` should be called")
+            let failExpectation = expectation(description: "`fail` should be called")
+            let fulfillExpectation = expectation(description: "`fulfill` should be called")
+            let waitExpectation = expectation(description: "`wait` should be called")
+
+            let mockTest = MockTest(
+                didCallFail: { failExpectation.fulfill() },
+                didCallExpectation: { expectationExpectation.fulfill() },
+                didCallWait: { waitExpectation.fulfill() },
+                didCallFulfill: { fulfillExpectation.fulfill() }
+            )
+
+            let recipe = Recipe<String, String> { _, completion in
+                completion("expected", StubError())
+            }
+
+            recipe.assert(with: mockTest) {
+                $0.when("input").expect("expected")
+            }
+
+            wait(for: [
+                expectationExpectation,
+                failExpectation,
+                fulfillExpectation,
+                waitExpectation,
+            ], timeout: 0.1, enforceOrder: true)
+        }
+
+        do { // both actual and error is not given
+            let expectationExpectation = expectation(description: "`expectation` should be called")
+            let failExpectation = expectation(description: "`fail` should be called")
+            let fulfillExpectation = expectation(description: "`fulfill` should be called")
+            let waitExpectation = expectation(description: "`wait` should be called")
+
+            let mockTest = MockTest(
+                didCallFail: { failExpectation.fulfill() },
+                didCallExpectation: { expectationExpectation.fulfill() },
+                didCallWait: { waitExpectation.fulfill() },
+                didCallFulfill: { fulfillExpectation.fulfill() }
+            )
+
+            let recipe = Recipe<String, String> { _, completion in
+                completion(nil, nil)
+            }
+
+            recipe.assert(with: mockTest) {
+                $0.when("input").expect("expected")
+            }
+
+            wait(for: [
+                expectationExpectation,
+                failExpectation,
+                fulfillExpectation,
+                waitExpectation,
+            ], timeout: 0.1, enforceOrder: true)
+        }
     }
 }

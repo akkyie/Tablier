@@ -1,20 +1,10 @@
 import XCTest
 
-#if canImport(Result)
-    import Result
-#endif
-
 extension XCTestExpectation: Fulfillable {}
 
 extension XCTestCase: Assertable {
-    public func assert(actual: AnyEquatable, expected: AnyEquatable,
-                       description: String, file: StaticString, line: UInt) {
-        XCTAssertEqual(actual, expected, description, file: file, line: line)
-    }
-
-    public func fail(error: AnyError, expected: AnyEquatable,
-                     description: String, file: StaticString, line: UInt) {
-        XCTFail("expected: \(expected) - \(description)", file: file, line: line)
+    open func fail(description: String, file: StaticString, line: UInt) {
+        XCTFail(description, file: file, line: line)
     }
 }
 
