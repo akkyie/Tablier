@@ -2,6 +2,10 @@
 
 [![Build Status](https://travis-ci.com/akkyie/Tablier.svg?branch=master)](https://travis-ci.com/akkyie/Tablier)
 [![codecov](https://codecov.io/gh/akkyie/Tablier/branch/master/graph/badge.svg)](https://codecov.io/gh/akkyie/Tablier)
+![Swift 4.2](https://img.shields.io/badge/swift-4.2-orange.svg)
+![Swift 5.0](https://img.shields.io/badge/swift-5.0-orange.svg)
+![SPM compatible](https://img.shields.io/badge/SPM-Compatible-brightgreen.svg?style=flat)
+![MIT License](https://img.shields.io/badge/license-MIT-brightgreen.svg)
 
 A micro-framework for [*Table Driven Tests*](https://github.com/golang/go/wiki/TableDrivenTests).
 
@@ -25,7 +29,7 @@ A micro-framework for [*Table Driven Tests*](https://github.com/golang/go/wiki/T
 
 CocoaPods and Carthage installation will soon be supported.
 
-### Usage
+## Usage
 
 You can define a *test recipe* to test your classes, structs or functions.
 
@@ -68,12 +72,12 @@ let recipe = Recipe<String, Int>(async: { input, complete in
 #### Note
 When an error is thrown in sync initalizer,  or the completion handler is called with an error, the test case is considered as failed for now. Testing errors will be supported in future.
 
-### Examples
+## Examples
 
 - [SyncExample.swift](/akkyie/Tablier/blob/master/Examples/Tests/ExampleTests/SyncExample.swift): A simple example with a sync function.
 - [AsyncExample.swift](/akkyie/Tablier/blob/master/Examples/Tests/ExampleTests/AsyncExample.swift): An example with an async function.
 - [RxTestExample.swift](/akkyie/Tablier/blob/master/Examples/Tests/ExampleTests/RxTestExample.swift): A more real-world-ish example. Test a view model, with RxSwift and RxTest.
 - [QuickExample.swift](/akkyie/Tablier/blob/master/Examples/Tests/ExampleTests/QuickExample.swift): An example to show Tablier works in a QuickSpec with no hassle.
 
-### License
+## License
 MIT. See LICENSE.
