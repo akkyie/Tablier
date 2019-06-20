@@ -68,5 +68,12 @@ let recipe = Recipe<String, Int>(async: { input, complete in
 #### Note
 When an error is thrown in sync initalizer,  or the completion handler is called with an error, the test case is considered as failed for now. Testing errors will be supported in future.
 
+### Examples
+
+- [SyncExample.swift](/akkyie/Tablier/blob/master/Examples/Tests/ExampleTests/SyncExample.swift): A simple example with a sync function.
+- [AsyncExample.swift](/akkyie/Tablier/blob/master/Examples/Tests/ExampleTests/AsyncExample.swift): An example with an async function.
+- [RxTestExample.swift](/akkyie/Tablier/blob/master/Examples/Tests/ExampleTests/RxTestExample.swift): A more real-world-ish example. Test a view model, with RxSwift and RxTest.
+- [QuickExample.swift](/akkyie/Tablier/blob/master/Examples/Tests/ExampleTests/QuickExample.swift): An example to show Tablier works in a QuickSpec with no hassle.
+
 ### License
 MIT. See LICENSE.
