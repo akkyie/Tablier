@@ -1,66 +1,58 @@
 import Foundation
 import XCTest
 
-#if canImport(Result)
-import Result
-#endif
-
 @testable import Tablier
 
 struct MockExpectation: Fulfillable {
-    let fulfillExpectation: XCTestExpectation?
+    let fulfillClosure: () -> Void
 
     func fulfill(_ file: StaticString, line: Int) {
-        fulfillExpectation?.fulfill()
+        fulfillClosure()
     }
 }
 
-struct MockTest: Testable {
+final class MockTest: Testable {
     typealias Expectation = MockExpectation
 
-    let assertExpectation: XCTestExpectation?
-    let failExpectation: XCTestExpectation?
-    let expectationExpectation: XCTestExpectation?
-    let fulfillExpectation: XCTestExpectation?
-    let waitExpectation: XCTestExpectation?
+    let didCallFail: () -> Void
+    let didCallExpectation: () -> Void
+    let didCallWait: () -> Void
+    let didCallFulfill: () -> Void
 
-    init() {
-        self.assertExpectation = nil
-        self.failExpectation = nil
-        self.expectationExpectation = nil
-        self.fulfillExpectation = nil
-        self.waitExpectation = nil
+    init(
+        didCallFail: @escaping () -> Void = {},
+        didCallExpectation: @escaping () -> Void = {},
+        didCallWait: @escaping () -> Void = {},
+        didCallFulfill: @escaping () -> Void = {}
+    ) {
+        self.didCallFail = didCallFail
+        self.didCallExpectation = didCallExpectation
+        self.didCallWait = didCallWait
+        self.didCallFulfill = didCallFulfill
     }
 
-    init(assertExpectation: XCTestExpectation,
-         failExpectation: XCTestExpectation,
-         expectationExpectation: XCTestExpectation,
-         fulfillExpectation: XCTestExpectation,
-         waitExpectation: XCTestExpectation) {
-        self.assertExpectation = assertExpectation
-        self.failExpectation = failExpectation
-        self.expectationExpectation = expectationExpectation
-        self.fulfillExpectation = fulfillExpectation
-        self.waitExpectation = waitExpectation
-    }
-
-    func assert(actual: AnyEquatable, expected: AnyEquatable,
-                description: String, file: StaticString, line: UInt) {
-        assertExpectation?.fulfill()
-    }
-
-    func fail(error: AnyError, expected: AnyEquatable,
-              description: String, file: StaticString, line: UInt) {
-        failExpectation?.fulfill()
+    func fail(description: String, file: StaticString, line: UInt) {
+        didCallFail()
     }
 
     func expectation(description: String, file: StaticString, line: UInt) -> MockExpectation {
-        expectationExpectation?.fulfill()
-        return MockExpectation(fulfillExpectation: fulfillExpectation)
+        didCallExpectation()
+
+        return MockExpectation { [unowned self] in
+            self.didCallFulfill()
+        }
     }
 
     func wait(for expectations: [MockExpectation], timeout: TimeInterval, enforceOrder: Bool,
               file: StaticString, line: UInt) {
-        waitExpectation?.fulfill()
+        didCallWait()
+    }
+
+    func assertionDescription(for actual: Any, expected: Any, descriptions: [String]) -> String {
+        return ""
+    }
+
+    func errorDescription(for error: Error, expected: Any, descriptions: [String]) -> String {
+        return ""
     }
 }

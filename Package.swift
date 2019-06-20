@@ -10,13 +10,11 @@ let package = Package(
             targets: ["Tablier"]
         ),
     ],
-    dependencies: [
-        .package(url: "https://github.com/antitypical/Result.git", from: "5.0.0"),
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "Tablier",
-            dependencies: ["Result"]
+            dependencies: []
         ),
         .testTarget(
             name: "TablierTests",

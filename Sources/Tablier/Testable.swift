@@ -1,9 +1,5 @@
 import struct Foundation.TimeInterval
 
-#if canImport(Result)
-    import Result
-#endif
-
 public typealias Testable = Assertable & Waitable
 
 public protocol Fulfillable {
@@ -11,11 +7,7 @@ public protocol Fulfillable {
 }
 
 public protocol Assertable {
-    func assert(actual: AnyEquatable, expected: AnyEquatable, description: String,
-                file: StaticString, line: UInt)
-
-    func fail(error: AnyError, expected: AnyEquatable, description: String,
-              file: StaticString, line: UInt)
+    func fail(description: String, file: StaticString, line: UInt)
 }
 
 public protocol Waitable {
