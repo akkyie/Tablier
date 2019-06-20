@@ -67,3 +67,6 @@ let recipe = Recipe<String, Int>(async: { input, complete in
 
 #### Note
 When an error is thrown in sync initalizer,  or the completion handler is called with an error, the test case is considered as failed for now. Testing errors will be supported in future.
+
+### License
+MIT. See LICENSE.
