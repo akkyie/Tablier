@@ -3,7 +3,7 @@ import Tablier
 
 @testable import Example
 
-/// SimpleExample
+/// Sync Example
 final class PluralizeTests: XCTestCase {
     func testPluralize() {
         let recipe = Recipe<String, String>(sync: { input in
