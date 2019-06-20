@@ -8,7 +8,7 @@ import RxTest
 
 /// RxTestExample
 final class ViewModelTests: XCTestCase {
-    func testViewModelMessage() {
+    func testLogin() {
         struct Input {
             let rememberMe: Bool
             let validatorResult: Bool
@@ -56,92 +56,69 @@ final class ViewModelTests: XCTestCase {
             )
         })
 
-        recipe.assert(with: self) { when in
-            when(.init(rememberMe: false, validatorResult: false, apiResult: false))
-                .expect(\.messageEvents, Recorded.events(
-                    .next(0, ""),
-                    .next(100, "invalid")
+        recipe.assert(with: self) {
+            $0.when(.init(rememberMe: false, validatorResult: false, apiResult: false),
+                    .init(rememberMe: false, validatorResult: false, apiResult: true))
+                .expect(.init(
+                    messageEvents: Recorded.events(
+                        .next(0, ""),
+                    	.next(100, "invalid")
+                	),
+                    validatorEvents: Recorded.events(
+                        .next(0, testCredential)
+                    ),
+                    apiClientEvents: Recorded.events(),
+                    credentialStoreEvents: Recorded.events()
                 ))
-                .expect(\.validatorEvents, Recorded.events(
-                    .next(0, testCredential)
-                ))
-                .expect(\.apiClientEvents, Recorded.events(),
-                        description: "API should not get called when the credential is invalid")
-                .expect(\.credentialStoreEvents, Recorded.events(),
-                        description: "should not store invalid credentials")
 
-            when(.init(rememberMe: false, validatorResult: false, apiResult: true))
-                .expect(\.messageEvents, Recorded.events(
-                    .next(0, ""),
-                    .next(100, "invalid")
+            $0.when(.init(rememberMe: true, validatorResult: true, apiResult: false))
+                .expect(.init(
+                    messageEvents: Recorded.events(
+                        .next(0, ""),
+                        .next(100, "loading"),
+                        .next(200, "error")
+                    ),
+                    validatorEvents: Recorded.events(
+                        .next(0, testCredential)
+                    ),
+                    apiClientEvents: Recorded.events(
+                        .next(100, testCredential)
+                    ),
+                    credentialStoreEvents: Recorded.events()
                 ))
-                .expect(\.validatorEvents, Recorded.events(
-                    .next(0, testCredential)
-                ))
-                .expect(\.apiClientEvents, Recorded.events(),
-                        description: "API should not get called when the credential is invalid")
-                .expect(\.credentialStoreEvents, Recorded.events(),
-                        description: "should not store invalid credentials")
 
-            when(.init(rememberMe: false, validatorResult: true, apiResult: false))
-                .expect(\.messageEvents, Recorded.events(
-                    .next(0, ""),
-                    .next(100, "loading"),
-                    .next(200, "error")
+            $0.when(.init(rememberMe: false, validatorResult: true, apiResult: true))
+                .expect(.init(
+                    messageEvents: Recorded.events(
+                        .next(0, ""),
+                        .next(100, "loading"),
+                        .next(200, "success")
+                    ),
+                    validatorEvents: Recorded.events(
+                        .next(0, testCredential)
+                    ),
+                    apiClientEvents: Recorded.events(
+                        .next(100, testCredential)
+                    ),
+                    credentialStoreEvents: Recorded.events()
                 ))
-                .expect(\.validatorEvents, Recorded.events(
-                    .next(0, testCredential)
-                ))
-                .expect(\.apiClientEvents, Recorded.events(
-                    .next(100, testCredential)
-                ))
-                .expect(\.credentialStoreEvents, Recorded.events(),
-                        description: "should not store the credential when remimberMe is false")
 
-            when(.init(rememberMe: false, validatorResult: true, apiResult: true))
-                .expect(\.messageEvents, Recorded.events(
-                    .next(0, ""),
-                    .next(100, "loading"),
-                    .next(200, "success")
-                ))
-                .expect(\.validatorEvents, Recorded.events(
-                    .next(0, testCredential)
-                ))
-                .expect(\.apiClientEvents, Recorded.events(
-                    .next(100, testCredential)
-                ))
-                .expect(\.credentialStoreEvents, Recorded.events(),
-                        description: "should not store the credential when remimberMe is false")
-
-            when(.init(rememberMe: true, validatorResult: true, apiResult: false))
-                .expect(\.messageEvents, Recorded.events(
-                    .next(0, ""),
-                    .next(100, "loading"),
-                    .next(200, "error")
-                ))
-                .expect(\.validatorEvents, Recorded.events(
-                    .next(0, testCredential)
-                ))
-                .expect(\.apiClientEvents, Recorded.events(
-                    .next(100, testCredential)
-                ))
-                .expect(\.credentialStoreEvents, Recorded.events(),
-                        description: "should not store the credential when API call failed")
-
-            when(.init(rememberMe: true, validatorResult: true, apiResult: true))
-                .expect(\.messageEvents, Recorded.events(
-                    .next(0, ""),
-                    .next(100, "loading"),
-                    .next(200, "success")
-                ))
-                .expect(\.validatorEvents, Recorded.events(
-                    .next(0, testCredential)
-                ))
-                .expect(\.apiClientEvents, Recorded.events(
-                    .next(100, testCredential)
-                ))
-                .expect(\.credentialStoreEvents, Recorded.events(
-                    .next(200, testCredential)
+            $0.when(.init(rememberMe: true, validatorResult: true, apiResult: true))
+                .expect(.init(
+                    messageEvents: Recorded.events(
+                        .next(0, ""),
+                        .next(100, "loading"),
+                        .next(200, "success")
+                    ),
+                    validatorEvents: Recorded.events(
+                        .next(0, testCredential)
+                    ),
+                    apiClientEvents: Recorded.events(
+                        .next(100, testCredential)
+                    ),
+                    credentialStoreEvents: Recorded.events(
+                        .next(200, testCredential)
+                    )
                 ))
         }
     }

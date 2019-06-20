@@ -10,17 +10,17 @@ final class PluralizeTests: XCTestCase {
             return try pluralize(word: input)
         })
 
-        recipe.assert(with: self) { when in
-            when("apple").expect("apples")
-            when("banana").expect("bananas")
-            when("chocolate").expect("chocolates")
+        recipe.assert(with: self) {
+            $0.when("apple").expect("apples")
+            $0.when("banana").expect("bananas")
+            $0.when("chocolate").expect("chocolates")
 
-            when("leaf").expect("leaves", description: "end with -f")
-            when("knife").expect("knives", description: "end with -fe")
-            when("tomato").expect("tomatoes", description: "end with -o")
+            $0.when("leaf").expect("leaves").withDescription("end with -f")
+            $0.when("knife").expect("knives").withDescription("end with -fe")
+            $0.when("tomato").expect("tomatoes").withDescription("end with -o")
 
-            // uncomment to see error
-            // when("foot").expect("feet", description: "irregular one")
+            // Remove omit() to see how it fails
+            $0.when("foot").expect("feet").withDescription("irregular one").omit()
         }
     }
 }
