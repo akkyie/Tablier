@@ -16,7 +16,7 @@ A micro-framework for [*Table Driven Tests*](https://github.com/golang/go/wiki/T
 - ☑️ Dead simple syntax
 - ☑️ Run async tests in parallel
 - ☑️ No additional dependency aside from XCTest
-- ️️☑️ Use with Quick, or any other XCTest-based testing framework
+- ☑️ Use with Quick, or any other XCTest-based testing framework
 - ☑️ Fully tested
 
 ## Installation
@@ -27,7 +27,18 @@ A micro-framework for [*Table Driven Tests*](https://github.com/golang/go/wiki/T
 .package(url: "https://github.com/akkyie/Tablier", from: "0.0.1")
 ```
 
-CocoaPods and Carthage installation will soon be supported.
+### Cocoapods
+
+```ruby
+target 'YourTests' do
+    inherit! :search_paths
+    pod 'Tablier'
+end
+```
+
+### Carthage
+
+Carthage will be supported when its [SwiftPM support](https://github.com/Carthage/Carthage/pull/1945) has landed.
 
 ## Usage
 
@@ -38,10 +49,9 @@ final class MyParseTests: XCTestCase {
     func testMyParse() {
         let recipe = Recipe<String, Int>(sync: { input in
             // `myParse` here is what you want to test
-            let output: Int = try myParse(input) // test fails if an error is thrown
+            let output: Int = try myParse(input) // it fails if an error is thrown
             return output
         })
-
 ...
 ```
 
@@ -49,7 +59,6 @@ Then you can list inputs and expected outputs for the recipe, to run the actual 
 
 ```swift
 ...
-
         recipe.assert(with: self) {
             $0.when("1").expect(1)
             $0.when("1234567890").expect(1234567890)
@@ -70,7 +79,7 @@ let recipe = Recipe<String, Int>(async: { input, complete in
 ```
 
 #### Note
-When an error is thrown in sync initalizer,  or the completion handler is called with an error, the test case is considered as failed for now. Testing errors will be supported in future.
+When an error is thrown in the sync initalizer or the completion handler is called with an error, the test case is considered as failed for now. Testing errors will be supported in the future.
 
 ## Examples
 
