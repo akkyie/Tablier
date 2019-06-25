@@ -1,0 +1,2 @@
+// XCTest doesn't include bitcode
+ENABLE_BITCODE=NO
