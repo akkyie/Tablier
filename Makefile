@@ -24,6 +24,10 @@ test/spm:
 test/xcode:
 	xcodebuild test -project $(PROJECT) -scheme $(SCHEME) -parallel-testing-enabled YES
 
+.PHONY: test/examples
+test/examples:
+	swift test --package-path Examples
+
 .PHONY: xcodeproj
 xcodeproj: $(PROJECT)
 $(PROJECT): .FORCE

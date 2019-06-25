@@ -14,9 +14,8 @@ matrix:
       os: osx
       script: &macos_script
         - swift --version
-        - swift test
-        - swift package generate-xcodeproj --enable-code-coverage
-        - xcodebuild build test -project Tablier.xcodeproj -scheme Tablier-Package
+        - make test/spm
+        - make test/xcode
       after_success:
         - bash <(curl -s https://codecov.io/bash) -X gcov -J '^Tablier$'
     
@@ -25,7 +24,7 @@ matrix:
       osx_image: xcode10.2
       script: *macos_script
       script:
-        - swift test --package-path Examples
+        - make test/examples
         - swift test --generate-linuxmain
         - git diff --exit-code **/XCTestManifests.swift
 
@@ -37,4 +36,4 @@ matrix:
         - eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"
       script:
         - swift --version
-        - swift test
+        - make test/spm
