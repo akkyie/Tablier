@@ -85,13 +85,13 @@ final class RecipeTests: XCTestCase {
     }
 
     func testAssertInit() {
-        let mockTest = MockTest()
+        let testCase = MockTestCase()
 
         let recipe = Recipe<String, String> { _, _ in
             XCTFail("initializer should not run when no test case is added")
         }
 
-        recipe.assert(with: mockTest) { _ in }
+        recipe.assert(with: testCase) { _ in }
     }
 
     func testPassingAssert() {
@@ -101,18 +101,19 @@ final class RecipeTests: XCTestCase {
         let fulfillExpectation = expectation(description: "`fulfill` should be called")
         let waitExpectation = expectation(description: "`wait` should be called")
 
-        let mockTest = MockTest(
-            didCallFail: { failExpectation.fulfill() },
+        let testCase = MockTestCase(
             didCallExpectation: { expectationExpectation.fulfill() },
             didCallWait: { waitExpectation.fulfill() },
             didCallFulfill: { fulfillExpectation.fulfill() }
         )
 
+        let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
+
         let recipe = Recipe<String, String> { _, completion in
             completion("expected", nil)
         }
 
-        recipe.assert(with: mockTest) {
+        recipe.assert(with: tester) {
             $0.when("input").expect("expected")
         }
 
@@ -130,18 +131,19 @@ final class RecipeTests: XCTestCase {
         let fulfillExpectation = expectation(description: "`fulfill` should be called")
         let waitExpectation = expectation(description: "`wait` should be called")
 
-        let mockTest = MockTest(
-            didCallFail: { failExpectation.fulfill() },
+        let testCase = MockTestCase(
             didCallExpectation: { expectationExpectation.fulfill() },
             didCallWait: { waitExpectation.fulfill() },
             didCallFulfill: { fulfillExpectation.fulfill() }
         )
 
+        let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
+
         let recipe = Recipe<String, String> { _, completion in
             completion("FOOBAR", nil)
         }
 
-        recipe.assert(with: mockTest) {
+        recipe.assert(with: tester) {
             $0.when("input").expect("expected")
         }
 
@@ -150,7 +152,7 @@ final class RecipeTests: XCTestCase {
             failExpectation,
             fulfillExpectation,
             waitExpectation,
-            ], timeout: 0.1, enforceOrder: true)
+        ], timeout: 0.1, enforceOrder: true)
     }
 
     func testErrorAssert() {
@@ -159,18 +161,19 @@ final class RecipeTests: XCTestCase {
         let fulfillExpectation = expectation(description: "`fulfill` should be called")
         let waitExpectation = expectation(description: "`wait` should be called")
 
-        let mockTest = MockTest(
-            didCallFail: { failExpectation.fulfill() },
+        let testCase = MockTestCase(
             didCallExpectation: { expectationExpectation.fulfill() },
             didCallWait: { waitExpectation.fulfill() },
             didCallFulfill: { fulfillExpectation.fulfill() }
         )
 
+        let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
+
         let recipe = Recipe<String, String> { _, completion in
             completion(nil, StubError())
         }
 
-        recipe.assert(with: mockTest) {
+        recipe.assert(with: tester) {
             $0.when("input").expect("expected")
         }
 
@@ -179,7 +182,7 @@ final class RecipeTests: XCTestCase {
             failExpectation,
             fulfillExpectation,
             waitExpectation,
-            ], timeout: 0.1, enforceOrder: true)
+        ], timeout: 0.1, enforceOrder: true)
     }
 
     func testInvalidCompletion() {
@@ -189,18 +192,19 @@ final class RecipeTests: XCTestCase {
             let fulfillExpectation = expectation(description: "`fulfill` should be called")
             let waitExpectation = expectation(description: "`wait` should be called")
 
-            let mockTest = MockTest(
-                didCallFail: { failExpectation.fulfill() },
+            let testCase = MockTestCase(
                 didCallExpectation: { expectationExpectation.fulfill() },
                 didCallWait: { waitExpectation.fulfill() },
                 didCallFulfill: { fulfillExpectation.fulfill() }
             )
 
+            let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
+
             let recipe = Recipe<String, String> { _, completion in
                 completion("expected", StubError())
             }
 
-            recipe.assert(with: mockTest) {
+            recipe.assert(with: tester) {
                 $0.when("input").expect("expected")
             }
 
@@ -218,18 +222,19 @@ final class RecipeTests: XCTestCase {
             let fulfillExpectation = expectation(description: "`fulfill` should be called")
             let waitExpectation = expectation(description: "`wait` should be called")
 
-            let mockTest = MockTest(
-                didCallFail: { failExpectation.fulfill() },
+            let testCase = MockTestCase(
                 didCallExpectation: { expectationExpectation.fulfill() },
                 didCallWait: { waitExpectation.fulfill() },
                 didCallFulfill: { fulfillExpectation.fulfill() }
             )
 
+            let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
+
             let recipe = Recipe<String, String> { _, completion in
                 completion(nil, nil)
             }
 
-            recipe.assert(with: mockTest) {
+            recipe.assert(with: tester) {
                 $0.when("input").expect("expected")
             }
 
@@ -240,5 +245,42 @@ final class RecipeTests: XCTestCase {
                 waitExpectation,
             ], timeout: 0.1, enforceOrder: true)
         }
+    }
+
+    func testTestCaseReleased() {
+        let expectationExpectation = expectation(description: "`expectation` should NOT be called")
+        expectationExpectation.isInverted = true
+        let failExpectation = expectation(description: "`fail` should NOT be called")
+        failExpectation.isInverted = true
+        let fulfillExpectation = expectation(description: "`fulfill` should NOT be called")
+        fulfillExpectation.isInverted = true
+        let waitExpectation = expectation(description: "`wait` should NOT be called")
+        waitExpectation.isInverted = true
+
+        var testCase: MockTestCase? = MockTestCase(
+            didCallExpectation: { expectationExpectation.fulfill() },
+            didCallWait: { waitExpectation.fulfill() },
+            didCallFulfill: { fulfillExpectation.fulfill() }
+        )
+
+        let tester = Tester(testCase!, fail: { _, _, _ in failExpectation.fulfill() })
+
+        let recipe = Recipe<String, String> { _, completion in
+            completion(nil, StubError())
+        }
+
+        // Release test case
+        testCase = nil
+
+        recipe.assert(with: tester) {
+            $0.when("input").expect("expected")
+        }
+
+        wait(for: [
+            expectationExpectation,
+            failExpectation,
+            fulfillExpectation,
+            waitExpectation,
+        ], timeout: 0.1, enforceOrder: true)
     }
 }

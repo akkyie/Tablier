@@ -13,44 +13,43 @@ private struct TestDescription: CustomStringConvertible {
     }
 }
 
-final class AsserterTests: XCTestCase {
+final class TesterTests: XCTestCase {
     func testFail() {
-        let failExpectation = expectation(description: "Asserter.fail")
-        let test = MockTest(didCallFail: {
-            failExpectation.fulfill()
-        })
+        let failExpectation = expectation(description: "Tester.fail")
+        let testCase = MockTestCase()
 
-        Asserter(test).fail(description: "", file: #file, line: #line)
+        let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
+        tester.fail("", #file, #line)
 
         wait(for: [failExpectation], timeout: 0.1)
     }
 
-    func testExpectation() {
-        let expectationExpectation = expectation(description: "Asserter.expectation")
-        let test = MockTest(didCallExpectation: {
-            expectationExpectation.fulfill()
-        })
+    func testExpect() {
+        let expectExpectation = expectation(description: "Tester.expect")
+        let testCase = MockTestCase(didCallExpectation: { expectExpectation.fulfill() })
 
-        _ = Asserter(test).expectation(description: "", file: #file, line: #line)
+        let tester = Tester(testCase)
+        let expect = tester.expect("", #file, #line)
+        XCTAssertNotNil(expect)
 
-        wait(for: [expectationExpectation], timeout: 0.1)
+        wait(for: [expectExpectation], timeout: 0.1)
     }
 
     func testWait() {
-        let waitExpectation = expectation(description: "Asserter.wait")
-        let test = MockTest(didCallWait: {
-            waitExpectation.fulfill()
-        })
+        let waitExpectation = expectation(description: "Tester.wait")
+        let testCase = MockTestCase(didCallWait: { waitExpectation.fulfill() })
 
-        Asserter(test).wait(for: [MockExpectation(fulfillClosure: {})], timeout: 100,
-                            enforceOrder: false, file: #file, line: #line)
+        let tester = Tester(testCase)
+        let expect: MockExpectation! = tester.expect("", #file, #line)
+
+        tester.wait([expect], 1, false, #file, #line)
 
         wait(for: [waitExpectation], timeout: 0.1)
     }
 
     func testDescription() {
         do {
-            let description = Asserter(MockTest()).assertionDescription(
+            let description = Tester(MockTestCase()).assertionDescription(
                 for: TestDebugDescription(),
                 expected: "expected",
                 descriptions: ["a", "b", "c"]
@@ -60,7 +59,7 @@ final class AsserterTests: XCTestCase {
         }
 
         do {
-            let description = Asserter(MockTest()).assertionDescription(
+            let description = Tester(MockTestCase()).assertionDescription(
                 for: TestDescription(),
                 expected: "expected",
                 descriptions: ["a", "b", "c"]
@@ -70,7 +69,7 @@ final class AsserterTests: XCTestCase {
         }
 
         do {
-            let description = Asserter(MockTest()).assertionDescription(
+            let description = Tester(MockTestCase()).assertionDescription(
                 for: Any.self,
                 expected: "expected",
                 descriptions: ["a", "b", "c"]
@@ -80,7 +79,7 @@ final class AsserterTests: XCTestCase {
         }
 
         do {
-            let description = Asserter(MockTest()).errorDescription(
+            let description = Tester(MockTestCase()).errorDescription(
                 for: NSError(domain: "", code: 0, userInfo: [NSLocalizedDescriptionKey: "localizedDescription"]),
                 expected: "expected",
                 descriptions: ["a", "b", "c"]
