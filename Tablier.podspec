@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name = "Tablier"
-  spec.version = "0.1.0"
+  spec.version = File.read("VERSION")
   spec.summary = "A micro-framework for Table Driven Tests."
   spec.description = <<-DESC
     Tablier makes it easy to write Table Driven Tests in Swift.
