@@ -1,5 +1,28 @@
 PROJECT = Tablier.xcodeproj
 XCCONFIG = Configs/SwiftPM.xcconfig
+SCHEME = Tablier-Package
+
+.PHONY: build
+build: build/spm
+
+.PHONY: build/spm
+build/spm:
+	swift build
+
+.PHONY: build/xcode
+build/xcode:
+	xcodebuild build -project $(PROJECT) -scheme $(SCHEME)
+
+.PHONY: test
+test: test/spm
+
+.PHONY: test/spm
+test/spm:
+	swift test --parallel
+
+.PHONY: test/xcode
+test/xcode:
+	xcodebuild test -project $(PROJECT) -scheme $(SCHEME) -parallel-testing-enabled YES
 
 .PHONY: xcodeproj
 xcodeproj: $(PROJECT)
@@ -21,8 +44,12 @@ endif
 	git tag $(VERSION)
 
 .PHONY: clean
-clean: 
+clean: clean/xcode
 	$(RM) -r $(PROJECT)
+
+.PHONY: clean/xcode
+clean/xcode: 
+	xcodebuild clean -project $(PROJECT) -scheme $(SCHEME)
 
 .PHONY: .FORCE
 .FORCE:
