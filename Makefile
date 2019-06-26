@@ -43,13 +43,15 @@ linuxmain:
 
 LATEST_VERSION = $(shell git describe --tags `git rev-list --tags --max-count=1`)
 .PHONY: update
-update: clean xcodeproj
+update:
 ifeq ($(VERSION),)
 	$(error No VERSION specified; run `make $@ VERSION=x.y.z`)
 endif
 ifeq ($(VERSION),$(LATEST_VERSION))
 	$(error Tag "$(VERSION)" already exists)
 endif
+	git diff --exit-code # ensure git status is clean
+	$(MAKE) clean xcodeproj
 	echo $(VERSION) > ./VERSION
 	git add ./VERSION $(PROJECT)
 	git commit -m "Bump version to $(VERSION)"
