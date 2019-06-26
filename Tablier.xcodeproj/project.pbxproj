@@ -16,7 +16,7 @@
             "en"
          );
          mainGroup = "OBJ_5";
-         productRefGroup = "OBJ_33";
+         productRefGroup = "OBJ_29";
          projectDirPath = ".";
          targets = (
             "Tablier::Tablier",
@@ -34,10 +34,7 @@
             "OBJ_14",
             "OBJ_15",
             "OBJ_16",
-            "OBJ_17",
-            "OBJ_18",
-            "OBJ_19",
-            "OBJ_20"
+            "OBJ_17"
          );
          name = "Tablier";
          path = "Sources/Tablier";
@@ -45,48 +42,62 @@
       };
       "OBJ_11" = {
          isa = "PBXFileReference";
-         path = "AnyEquatable.swift";
+         path = "AnyRecipe.swift";
          sourceTree = "<group>";
       };
       "OBJ_12" = {
          isa = "PBXFileReference";
-         path = "AnyRecipe.swift";
+         path = "Expect.swift";
          sourceTree = "<group>";
       };
       "OBJ_13" = {
          isa = "PBXFileReference";
-         path = "Asserter.swift";
+         path = "Expecter.swift";
          sourceTree = "<group>";
       };
       "OBJ_14" = {
          isa = "PBXFileReference";
-         path = "Expect.swift";
+         path = "Recipe.swift";
          sourceTree = "<group>";
       };
       "OBJ_15" = {
          isa = "PBXFileReference";
-         path = "Expecter.swift";
+         path = "TestCase.swift";
          sourceTree = "<group>";
       };
       "OBJ_16" = {
          isa = "PBXFileReference";
-         path = "Recipe.swift";
+         path = "When.swift";
          sourceTree = "<group>";
       };
       "OBJ_17" = {
          isa = "PBXFileReference";
-         path = "TestCase.swift";
+         path = "XCTest.swift";
          sourceTree = "<group>";
       };
       "OBJ_18" = {
-         isa = "PBXFileReference";
-         path = "Testable.swift";
-         sourceTree = "<group>";
+         isa = "PBXGroup";
+         children = (
+            "OBJ_19"
+         );
+         name = "Tests";
+         path = "";
+         sourceTree = "SOURCE_ROOT";
       };
       "OBJ_19" = {
-         isa = "PBXFileReference";
-         path = "When.swift";
-         sourceTree = "<group>";
+         isa = "PBXGroup";
+         children = (
+            "OBJ_20",
+            "OBJ_21",
+            "OBJ_22",
+            "OBJ_23",
+            "OBJ_24",
+            "OBJ_25",
+            "OBJ_26"
+         );
+         name = "TablierTests";
+         path = "Tests/TablierTests";
+         sourceTree = "SOURCE_ROOT";
       };
       "OBJ_2" = {
          isa = "XCConfigurationList";
@@ -99,68 +110,58 @@
       };
       "OBJ_20" = {
          isa = "PBXFileReference";
-         path = "XCTestAssertion.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_21" = {
-         isa = "PBXGroup";
-         children = (
-            "OBJ_22"
-         );
-         name = "Tests";
-         path = "";
-         sourceTree = "SOURCE_ROOT";
-      };
-      "OBJ_22" = {
-         isa = "PBXGroup";
-         children = (
-            "OBJ_23",
-            "OBJ_24",
-            "OBJ_25",
-            "OBJ_26",
-            "OBJ_27",
-            "OBJ_28",
-            "OBJ_29",
-            "OBJ_30"
-         );
-         name = "TablierTests";
-         path = "Tests/TablierTests";
-         sourceTree = "SOURCE_ROOT";
-      };
-      "OBJ_23" = {
-         isa = "PBXFileReference";
-         path = "AnyEquatableTests.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_24" = {
-         isa = "PBXFileReference";
-         path = "AsserterTests.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_25" = {
-         isa = "PBXFileReference";
          path = "ExpectTests.swift";
          sourceTree = "<group>";
       };
-      "OBJ_26" = {
+      "OBJ_21" = {
          isa = "PBXFileReference";
          path = "MockRecipe.swift";
          sourceTree = "<group>";
       };
-      "OBJ_27" = {
+      "OBJ_22" = {
          isa = "PBXFileReference";
          path = "MockTest.swift";
          sourceTree = "<group>";
       };
-      "OBJ_28" = {
+      "OBJ_23" = {
          isa = "PBXFileReference";
          path = "RecipeTests.swift";
          sourceTree = "<group>";
       };
-      "OBJ_29" = {
+      "OBJ_24" = {
+         isa = "PBXFileReference";
+         path = "TesterTests.swift";
+         sourceTree = "<group>";
+      };
+      "OBJ_25" = {
          isa = "PBXFileReference";
          path = "WhenTests.swift";
          sourceTree = "<group>";
+      };
+      "OBJ_26" = {
+         isa = "PBXFileReference";
+         path = "XCTestManifests.swift";
+         sourceTree = "<group>";
+      };
+      "OBJ_27" = {
+         isa = "PBXFileReference";
+         path = "Examples";
+         sourceTree = "SOURCE_ROOT";
+      };
+      "OBJ_28" = {
+         isa = "PBXFileReference";
+         path = "Configs";
+         sourceTree = "SOURCE_ROOT";
+      };
+      "OBJ_29" = {
+         isa = "PBXGroup";
+         children = (
+            "Tablier::Tablier::Product",
+            "Tablier::TablierTests::Product"
+         );
+         name = "Products";
+         path = "";
+         sourceTree = "BUILT_PRODUCTS_DIR";
       };
       "OBJ_3" = {
          isa = "XCBuildConfiguration";
@@ -201,41 +202,16 @@
          };
          name = "Debug";
       };
-      "OBJ_30" = {
-         isa = "PBXFileReference";
-         path = "XCTestManifests.swift";
-         sourceTree = "<group>";
-      };
-      "OBJ_31" = {
-         isa = "PBXFileReference";
-         path = "Examples";
-         sourceTree = "SOURCE_ROOT";
-      };
-      "OBJ_32" = {
-         isa = "PBXFileReference";
-         path = "Configs";
-         sourceTree = "SOURCE_ROOT";
-      };
       "OBJ_33" = {
-         isa = "PBXGroup";
-         children = (
-            "Tablier::TablierTests::Product",
-            "Tablier::Tablier::Product"
-         );
-         name = "Products";
-         path = "";
-         sourceTree = "BUILT_PRODUCTS_DIR";
-      };
-      "OBJ_37" = {
          isa = "XCConfigurationList";
          buildConfigurations = (
-            "OBJ_38",
-            "OBJ_39"
+            "OBJ_34",
+            "OBJ_35"
          );
          defaultConfigurationIsVisible = "0";
          defaultConfigurationName = "Release";
       };
-      "OBJ_38" = {
+      "OBJ_34" = {
          isa = "XCBuildConfiguration";
          baseConfigurationReference = "OBJ_8";
          buildSettings = {
@@ -273,7 +249,7 @@
          };
          name = "Debug";
       };
-      "OBJ_39" = {
+      "OBJ_35" = {
          isa = "XCBuildConfiguration";
          baseConfigurationReference = "OBJ_8";
          buildSettings = {
@@ -310,6 +286,30 @@
             TARGET_NAME = "Tablier";
          };
          name = "Release";
+      };
+      "OBJ_36" = {
+         isa = "PBXSourcesBuildPhase";
+         files = (
+            "OBJ_37",
+            "OBJ_38",
+            "OBJ_39",
+            "OBJ_40",
+            "OBJ_41",
+            "OBJ_42",
+            "OBJ_43"
+         );
+      };
+      "OBJ_37" = {
+         isa = "PBXBuildFile";
+         fileRef = "OBJ_11";
+      };
+      "OBJ_38" = {
+         isa = "PBXBuildFile";
+         fileRef = "OBJ_12";
+      };
+      "OBJ_39" = {
+         isa = "PBXBuildFile";
+         fileRef = "OBJ_13";
       };
       "OBJ_4" = {
          isa = "XCBuildConfiguration";
@@ -344,89 +344,36 @@
          name = "Release";
       };
       "OBJ_40" = {
-         isa = "PBXSourcesBuildPhase";
-         files = (
-            "OBJ_41",
-            "OBJ_42",
-            "OBJ_43",
-            "OBJ_44",
-            "OBJ_45",
-            "OBJ_46",
-            "OBJ_47",
-            "OBJ_48",
-            "OBJ_49",
-            "OBJ_50"
-         );
-      };
-      "OBJ_41" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_11";
-      };
-      "OBJ_42" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_12";
-      };
-      "OBJ_43" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_13";
-      };
-      "OBJ_44" = {
          isa = "PBXBuildFile";
          fileRef = "OBJ_14";
       };
-      "OBJ_45" = {
+      "OBJ_41" = {
          isa = "PBXBuildFile";
          fileRef = "OBJ_15";
       };
-      "OBJ_46" = {
+      "OBJ_42" = {
          isa = "PBXBuildFile";
          fileRef = "OBJ_16";
       };
-      "OBJ_47" = {
+      "OBJ_43" = {
          isa = "PBXBuildFile";
          fileRef = "OBJ_17";
       };
-      "OBJ_48" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_18";
-      };
-      "OBJ_49" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_19";
-      };
-      "OBJ_5" = {
-         isa = "PBXGroup";
-         children = (
-            "OBJ_6",
-            "OBJ_7",
-            "OBJ_9",
-            "OBJ_21",
-            "OBJ_31",
-            "OBJ_32",
-            "OBJ_33"
-         );
-         path = "";
-         sourceTree = "<group>";
-      };
-      "OBJ_50" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_20";
-      };
-      "OBJ_51" = {
+      "OBJ_44" = {
          isa = "PBXFrameworksBuildPhase";
          files = (
          );
       };
-      "OBJ_53" = {
+      "OBJ_46" = {
          isa = "XCConfigurationList";
          buildConfigurations = (
-            "OBJ_54",
-            "OBJ_55"
+            "OBJ_47",
+            "OBJ_48"
          );
          defaultConfigurationIsVisible = "0";
          defaultConfigurationName = "Release";
       };
-      "OBJ_54" = {
+      "OBJ_47" = {
          isa = "XCBuildConfiguration";
          buildSettings = {
             LD = "/usr/bin/true";
@@ -444,7 +391,7 @@
          };
          name = "Debug";
       };
-      "OBJ_55" = {
+      "OBJ_48" = {
          isa = "XCBuildConfiguration";
          buildSettings = {
             LD = "/usr/bin/true";
@@ -462,24 +409,135 @@
          };
          name = "Release";
       };
-      "OBJ_56" = {
+      "OBJ_49" = {
          isa = "PBXSourcesBuildPhase";
          files = (
-            "OBJ_57"
+            "OBJ_50"
          );
       };
-      "OBJ_57" = {
+      "OBJ_5" = {
+         isa = "PBXGroup";
+         children = (
+            "OBJ_6",
+            "OBJ_7",
+            "OBJ_9",
+            "OBJ_18",
+            "OBJ_27",
+            "OBJ_28",
+            "OBJ_29"
+         );
+         path = "";
+         sourceTree = "<group>";
+      };
+      "OBJ_50" = {
          isa = "PBXBuildFile";
          fileRef = "OBJ_6";
       };
-      "OBJ_59" = {
+      "OBJ_52" = {
          isa = "XCConfigurationList";
          buildConfigurations = (
-            "OBJ_60",
-            "OBJ_61"
+            "OBJ_53",
+            "OBJ_54"
          );
          defaultConfigurationIsVisible = "0";
          defaultConfigurationName = "Release";
+      };
+      "OBJ_53" = {
+         isa = "XCBuildConfiguration";
+         buildSettings = {
+         };
+         name = "Debug";
+      };
+      "OBJ_54" = {
+         isa = "XCBuildConfiguration";
+         buildSettings = {
+         };
+         name = "Release";
+      };
+      "OBJ_55" = {
+         isa = "PBXTargetDependency";
+         target = "Tablier::TablierTests";
+      };
+      "OBJ_57" = {
+         isa = "XCConfigurationList";
+         buildConfigurations = (
+            "OBJ_58",
+            "OBJ_59"
+         );
+         defaultConfigurationIsVisible = "0";
+         defaultConfigurationName = "Release";
+      };
+      "OBJ_58" = {
+         isa = "XCBuildConfiguration";
+         baseConfigurationReference = "OBJ_8";
+         buildSettings = {
+            CLANG_ENABLE_MODULES = "YES";
+            EMBEDDED_CONTENT_CONTAINS_SWIFT = "YES";
+            FRAMEWORK_SEARCH_PATHS = (
+               "$(inherited)",
+               "$(PLATFORM_DIR)/Developer/Library/Frameworks"
+            );
+            HEADER_SEARCH_PATHS = (
+               "$(inherited)"
+            );
+            INFOPLIST_FILE = "Tablier.xcodeproj/TablierTests_Info.plist";
+            LD_RUNPATH_SEARCH_PATHS = (
+               "$(inherited)",
+               "@loader_path/../Frameworks",
+               "@loader_path/Frameworks"
+            );
+            OTHER_CFLAGS = (
+               "$(inherited)"
+            );
+            OTHER_LDFLAGS = (
+               "$(inherited)"
+            );
+            OTHER_SWIFT_FLAGS = (
+               "$(inherited)"
+            );
+            SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
+               "$(inherited)"
+            );
+            SWIFT_VERSION = "4.2";
+            TARGET_NAME = "TablierTests";
+         };
+         name = "Debug";
+      };
+      "OBJ_59" = {
+         isa = "XCBuildConfiguration";
+         baseConfigurationReference = "OBJ_8";
+         buildSettings = {
+            CLANG_ENABLE_MODULES = "YES";
+            EMBEDDED_CONTENT_CONTAINS_SWIFT = "YES";
+            FRAMEWORK_SEARCH_PATHS = (
+               "$(inherited)",
+               "$(PLATFORM_DIR)/Developer/Library/Frameworks"
+            );
+            HEADER_SEARCH_PATHS = (
+               "$(inherited)"
+            );
+            INFOPLIST_FILE = "Tablier.xcodeproj/TablierTests_Info.plist";
+            LD_RUNPATH_SEARCH_PATHS = (
+               "$(inherited)",
+               "@loader_path/../Frameworks",
+               "@loader_path/Frameworks"
+            );
+            OTHER_CFLAGS = (
+               "$(inherited)"
+            );
+            OTHER_LDFLAGS = (
+               "$(inherited)"
+            );
+            OTHER_SWIFT_FLAGS = (
+               "$(inherited)"
+            );
+            SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
+               "$(inherited)"
+            );
+            SWIFT_VERSION = "4.2";
+            TARGET_NAME = "TablierTests";
+         };
+         name = "Release";
       };
       "OBJ_6" = {
          isa = "PBXFileReference";
@@ -488,122 +546,54 @@
          sourceTree = "<group>";
       };
       "OBJ_60" = {
-         isa = "XCBuildConfiguration";
-         buildSettings = {
-         };
-         name = "Debug";
-      };
-      "OBJ_61" = {
-         isa = "XCBuildConfiguration";
-         buildSettings = {
-         };
-         name = "Release";
-      };
-      "OBJ_62" = {
-         isa = "PBXTargetDependency";
-         target = "Tablier::TablierTests";
-      };
-      "OBJ_64" = {
-         isa = "XCConfigurationList";
-         buildConfigurations = (
-            "OBJ_65",
-            "OBJ_66"
-         );
-         defaultConfigurationIsVisible = "0";
-         defaultConfigurationName = "Release";
-      };
-      "OBJ_65" = {
-         isa = "XCBuildConfiguration";
-         baseConfigurationReference = "OBJ_8";
-         buildSettings = {
-            CLANG_ENABLE_MODULES = "YES";
-            EMBEDDED_CONTENT_CONTAINS_SWIFT = "YES";
-            FRAMEWORK_SEARCH_PATHS = (
-               "$(inherited)",
-               "$(PLATFORM_DIR)/Developer/Library/Frameworks"
-            );
-            HEADER_SEARCH_PATHS = (
-               "$(inherited)"
-            );
-            INFOPLIST_FILE = "Tablier.xcodeproj/TablierTests_Info.plist";
-            LD_RUNPATH_SEARCH_PATHS = (
-               "$(inherited)",
-               "@loader_path/../Frameworks",
-               "@loader_path/Frameworks"
-            );
-            OTHER_CFLAGS = (
-               "$(inherited)"
-            );
-            OTHER_LDFLAGS = (
-               "$(inherited)"
-            );
-            OTHER_SWIFT_FLAGS = (
-               "$(inherited)"
-            );
-            SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
-               "$(inherited)"
-            );
-            SWIFT_VERSION = "4.2";
-            TARGET_NAME = "TablierTests";
-         };
-         name = "Debug";
-      };
-      "OBJ_66" = {
-         isa = "XCBuildConfiguration";
-         baseConfigurationReference = "OBJ_8";
-         buildSettings = {
-            CLANG_ENABLE_MODULES = "YES";
-            EMBEDDED_CONTENT_CONTAINS_SWIFT = "YES";
-            FRAMEWORK_SEARCH_PATHS = (
-               "$(inherited)",
-               "$(PLATFORM_DIR)/Developer/Library/Frameworks"
-            );
-            HEADER_SEARCH_PATHS = (
-               "$(inherited)"
-            );
-            INFOPLIST_FILE = "Tablier.xcodeproj/TablierTests_Info.plist";
-            LD_RUNPATH_SEARCH_PATHS = (
-               "$(inherited)",
-               "@loader_path/../Frameworks",
-               "@loader_path/Frameworks"
-            );
-            OTHER_CFLAGS = (
-               "$(inherited)"
-            );
-            OTHER_LDFLAGS = (
-               "$(inherited)"
-            );
-            OTHER_SWIFT_FLAGS = (
-               "$(inherited)"
-            );
-            SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
-               "$(inherited)"
-            );
-            SWIFT_VERSION = "4.2";
-            TARGET_NAME = "TablierTests";
-         };
-         name = "Release";
-      };
-      "OBJ_67" = {
          isa = "PBXSourcesBuildPhase";
          files = (
-            "OBJ_68",
-            "OBJ_69",
-            "OBJ_70",
-            "OBJ_71",
-            "OBJ_72",
-            "OBJ_73",
-            "OBJ_74",
-            "OBJ_75"
+            "OBJ_61",
+            "OBJ_62",
+            "OBJ_63",
+            "OBJ_64",
+            "OBJ_65",
+            "OBJ_66",
+            "OBJ_67"
          );
       };
-      "OBJ_68" = {
+      "OBJ_61" = {
+         isa = "PBXBuildFile";
+         fileRef = "OBJ_20";
+      };
+      "OBJ_62" = {
+         isa = "PBXBuildFile";
+         fileRef = "OBJ_21";
+      };
+      "OBJ_63" = {
+         isa = "PBXBuildFile";
+         fileRef = "OBJ_22";
+      };
+      "OBJ_64" = {
          isa = "PBXBuildFile";
          fileRef = "OBJ_23";
       };
-      "OBJ_69" = {
+      "OBJ_65" = {
          isa = "PBXBuildFile";
          fileRef = "OBJ_24";
+      };
+      "OBJ_66" = {
+         isa = "PBXBuildFile";
+         fileRef = "OBJ_25";
+      };
+      "OBJ_67" = {
+         isa = "PBXBuildFile";
+         fileRef = "OBJ_26";
+      };
+      "OBJ_68" = {
+         isa = "PBXFrameworksBuildPhase";
+         files = (
+            "OBJ_69"
+         );
+      };
+      "OBJ_69" = {
+         isa = "PBXBuildFile";
+         fileRef = "Tablier::Tablier::Product";
       };
       "OBJ_7" = {
          isa = "PBXGroup";
@@ -615,40 +605,6 @@
          sourceTree = "<group>";
       };
       "OBJ_70" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_25";
-      };
-      "OBJ_71" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_26";
-      };
-      "OBJ_72" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_27";
-      };
-      "OBJ_73" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_28";
-      };
-      "OBJ_74" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_29";
-      };
-      "OBJ_75" = {
-         isa = "PBXBuildFile";
-         fileRef = "OBJ_30";
-      };
-      "OBJ_76" = {
-         isa = "PBXFrameworksBuildPhase";
-         files = (
-            "OBJ_77"
-         );
-      };
-      "OBJ_77" = {
-         isa = "PBXBuildFile";
-         fileRef = "Tablier::Tablier::Product";
-      };
-      "OBJ_78" = {
          isa = "PBXTargetDependency";
          target = "Tablier::Tablier";
       };
@@ -669,9 +625,9 @@
       };
       "Tablier::SwiftPMPackageDescription" = {
          isa = "PBXNativeTarget";
-         buildConfigurationList = "OBJ_53";
+         buildConfigurationList = "OBJ_46";
          buildPhases = (
-            "OBJ_56"
+            "OBJ_49"
          );
          dependencies = (
          );
@@ -681,10 +637,10 @@
       };
       "Tablier::Tablier" = {
          isa = "PBXNativeTarget";
-         buildConfigurationList = "OBJ_37";
+         buildConfigurationList = "OBJ_33";
          buildPhases = (
-            "OBJ_40",
-            "OBJ_51"
+            "OBJ_36",
+            "OBJ_44"
          );
          dependencies = (
          );
@@ -700,24 +656,24 @@
       };
       "Tablier::TablierPackageTests::ProductTarget" = {
          isa = "PBXAggregateTarget";
-         buildConfigurationList = "OBJ_59";
+         buildConfigurationList = "OBJ_52";
          buildPhases = (
          );
          dependencies = (
-            "OBJ_62"
+            "OBJ_55"
          );
          name = "TablierPackageTests";
          productName = "TablierPackageTests";
       };
       "Tablier::TablierTests" = {
          isa = "PBXNativeTarget";
-         buildConfigurationList = "OBJ_64";
+         buildConfigurationList = "OBJ_57";
          buildPhases = (
-            "OBJ_67",
-            "OBJ_76"
+            "OBJ_60",
+            "OBJ_68"
          );
          dependencies = (
-            "OBJ_78"
+            "OBJ_70"
          );
          name = "TablierTests";
          productName = "TablierTests";
