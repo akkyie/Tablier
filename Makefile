@@ -28,32 +28,46 @@ test/xcode:
 test/examples:
 	swift test --package-path Examples
 
+.PHONY: test/docker
+test/docker: clean/spm linuxmain
+	docker run -it --rm -v `pwd`:/tablier -w /tablier swift:5.0 swift test  
+
 .PHONY: xcodeproj
 xcodeproj: $(PROJECT)
 $(PROJECT): .FORCE
 	swift package generate-xcodeproj --enable-code-coverage --xcconfig-overrides $(XCCONFIG)
 
+.PHONY: linuxmain
+linuxmain:
+	swift test --generate-linuxmain
+
 LATEST_VERSION = $(shell git describe --tags `git rev-list --tags --max-count=1`)
 .PHONY: update
-update: .FORCE
+update:
 ifeq ($(VERSION),)
 	$(error No VERSION specified; run `make $@ VERSION=x.y.z`)
 endif
 ifeq ($(VERSION),$(LATEST_VERSION))
 	$(error Tag "$(VERSION)" already exists)
 endif
+	git diff --exit-code # ensure git status is clean
+	$(MAKE) clean xcodeproj
 	echo $(VERSION) > ./VERSION
-	git add ./VERSION
+	git add ./VERSION $(PROJECT)
 	git commit -m "Bump version to $(VERSION)"
 	git tag $(VERSION)
 
 .PHONY: clean
-clean: clean/xcode
+clean: clean/xcode clean/spm
 	$(RM) -r $(PROJECT)
 
 .PHONY: clean/xcode
 clean/xcode: 
 	xcodebuild clean -project $(PROJECT) -scheme $(SCHEME)
+
+.PHONY: clean/spm
+clean/spm: 
+	swift package clean
 
 .PHONY: .FORCE
 .FORCE:

@@ -7,26 +7,25 @@ notifications:
 
 matrix:
   include:
-    - &macos
-      name: macOS / Swift 4.2
+    - name: macOS / Swift 4.2
       language: objective-c
       osx_image: xcode10.1
       os: osx
-      script: &macos_script
+      script:
         - swift --version
-        - make test/spm
-        - make test/xcode
+        - make test/spm test/xcode
       after_success:
         - bash <(curl -s https://codecov.io/bash) -X gcov -J '^Tablier$'
     
-    - <<: *macos
-      name: macOS / Swift 5.0
+    - name: macOS / Swift 5.0
+      language: objective-c
       osx_image: xcode10.2
-      script: *macos_script
       script:
-        - make test/examples
-        - swift test --generate-linuxmain
-        - git diff --exit-code **/XCTestManifests.swift
+        - swift --version
+        - make test/spm test/xcode test/examples
+        - make linuxmain && git diff --exit-code **/XCTestManifests.swift
+      after_success:
+        - bash <(curl -s https://codecov.io/bash) -X gcov -J '^Tablier$'
 
     - name: Linux / Swift 5.0
       language: generic
