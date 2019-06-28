@@ -6,57 +6,57 @@ private struct StubError: Error, Equatable {}
 final class RecipeTests: XCTestCase {
     func testInitClosure() {
         do {
-            let recipe = Recipe<String, String> { _, completion in
+            let recipe = Recipe<String, String> { _, completion, _, _ in
                 completion("result", nil)
             }
 
-            recipe.recipe("input") { (actual, error) in
+            recipe.recipe("input", { (actual, error) in
                 XCTAssertEqual(actual, "result",
                                "recipe should have the clousure passed by its initializer")
                 XCTAssertNil(error)
-            }
+            }, #file, #line)
         }
 
         do {
-            let recipe = Recipe<String, String> { _, completion in
+            let recipe = Recipe<String, String> { _, completion, _, _ in
                 completion(nil, StubError())
             }
 
-            recipe.recipe("input") { (actual, error) in
+            recipe.recipe("input", { (actual, error) in
                 XCTAssertNil(actual)
                 XCTAssertEqual(error as? StubError, StubError(),
                                "recipe should have the clousure passed by its initializer")
-            }
+            }, #file, #line)
         }
 
         do {
-            let successRecipe = Recipe<String, String> { _ in
+            let successRecipe = Recipe<String, String> { _, _, _ in
                 return "result"
             }
 
-            successRecipe.recipe("input") { (actual, error) in
+            successRecipe.recipe("input", { (actual, error) in
                 XCTAssertEqual(actual, "result",
                                "Sync initalizer should pass closure to async initializer")
                 XCTAssertNil(error)
-            }
+            }, #file, #line)
         }
 
         do {
-            let failureRecipe = Recipe<String, String> { _ in
+            let failureRecipe = Recipe<String, String> { _, _, _ in
                 throw StubError()
             }
 
-            failureRecipe.recipe("input") { (actual, error) in
+            failureRecipe.recipe("input", { (actual, error) in
                 XCTAssertNil(actual)
                 XCTAssertEqual(error as? StubError, StubError(),
                                "Sync initalizer should pass closure to async initializer")
-            }
+            }, #file, #line)
         }
     }
 
     func testInitTimeout() {
         do {
-            let recipe = Recipe<String, String> { _ in
+            let recipe = Recipe<String, String> { _, _, _ in
                 XCTFail("initializer should not run the actual recipe")
                 return "result"
             }
@@ -66,7 +66,7 @@ final class RecipeTests: XCTestCase {
         }
 
         do {
-            let recipe = Recipe<String, String> { _, _ in
+            let recipe = Recipe<String, String> { _, _, _, _ in
                 XCTFail("initializer should not run the actual recipe")
             }
 
@@ -75,7 +75,7 @@ final class RecipeTests: XCTestCase {
         }
 
         do {
-            let recipe = Recipe<String, String>(timeout: 100) { _, _ in
+            let recipe = Recipe<String, String>(timeout: 100) { _, _, _, _ in
                 XCTFail("initializer should not run the actual recipe")
             }
 
@@ -87,7 +87,7 @@ final class RecipeTests: XCTestCase {
     func testAssertInit() {
         let testCase = MockTestCase()
 
-        let recipe = Recipe<String, String> { _, _ in
+        let recipe = Recipe<String, String> { _, _, _, _ in
             XCTFail("initializer should not run when no test case is added")
         }
 
@@ -109,7 +109,7 @@ final class RecipeTests: XCTestCase {
 
         let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
 
-        let recipe = Recipe<String, String> { _, completion in
+        let recipe = Recipe<String, String> { _, completion, _, _ in
             completion("expected", nil)
         }
 
@@ -139,7 +139,7 @@ final class RecipeTests: XCTestCase {
 
         let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
 
-        let recipe = Recipe<String, String> { _, completion in
+        let recipe = Recipe<String, String> { _, completion, _, _ in
             completion("FOOBAR", nil)
         }
 
@@ -169,7 +169,7 @@ final class RecipeTests: XCTestCase {
 
         let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
 
-        let recipe = Recipe<String, String> { _, completion in
+        let recipe = Recipe<String, String> { _, completion, _, _ in
             completion(nil, StubError())
         }
 
@@ -200,7 +200,7 @@ final class RecipeTests: XCTestCase {
 
             let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
 
-            let recipe = Recipe<String, String> { _, completion in
+            let recipe = Recipe<String, String> { _, completion, _, _ in
                 completion("expected", StubError())
             }
 
@@ -230,7 +230,7 @@ final class RecipeTests: XCTestCase {
 
             let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
 
-            let recipe = Recipe<String, String> { _, completion in
+            let recipe = Recipe<String, String> { _, completion, _, _ in
                 completion(nil, nil)
             }
 
@@ -265,7 +265,7 @@ final class RecipeTests: XCTestCase {
 
         let tester = Tester(testCase!, fail: { _, _, _ in failExpectation.fulfill() })
 
-        let recipe = Recipe<String, String> { _, completion in
+        let recipe = Recipe<String, String> { _, completion, _, _ in
             completion(nil, StubError())
         }
 
