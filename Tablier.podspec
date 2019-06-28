@@ -1,6 +1,9 @@
 Pod::Spec.new do |spec|
+  last_commit = `git rev-list --tags --max-count=1`.strip
+  last_tag = `git describe --tags #{last_commit}`.strip
+
   spec.name = "Tablier"
-  spec.version = File.read("VERSION")
+  spec.version = last_tag
   spec.summary = "A micro-framework for Table Driven Tests."
   spec.description = <<-DESC
     Tablier makes it easy to write Table Driven Tests in Swift.
