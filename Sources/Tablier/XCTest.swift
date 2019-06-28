@@ -7,10 +7,12 @@ extension XCTestExpectation: XCTestExpectationProtocol {}
 #if os(Linux)
 
 public protocol XCTestCaseProtocol: AnyObject {
-    associatedtype Expectation: XCTestExpectationProtocol
+    associatedtype ExpectationType: XCTestExpectationProtocol
 
-    func wait(for expectations: [Expectation], timeout: TimeInterval, enforceOrder: Bool, file: StaticString, line: Int)
-    func expectation(description: String, file: StaticString, line: Int) -> Expectation
+    func wait(for expectations: [ExpectationType], timeout: TimeInterval, enforceOrder: Bool,
+              file: StaticString, line: Int)
+
+    func expectation(description: String, file: StaticString, line: Int) -> ExpectationType
 }
 
 public protocol XCTestExpectationProtocol: AnyObject {
@@ -20,10 +22,10 @@ public protocol XCTestExpectationProtocol: AnyObject {
 #elseif os(macOS) || os(iOS) || os(tvOS)
 
 public protocol XCTestCaseProtocol: AnyObject {
-    associatedtype Expectation: XCTestExpectationProtocol
+    associatedtype ExpectationType: XCTestExpectationProtocol
 
-    func wait(for expectations: [Expectation], timeout: TimeInterval, enforceOrder: Bool)
-    func expectation(description: String) -> Expectation
+    func wait(for expectations: [ExpectationType], timeout: TimeInterval, enforceOrder: Bool)
+    func expectation(description: String) -> ExpectationType
 }
 
 public protocol XCTestExpectationProtocol: AnyObject {
@@ -35,12 +37,12 @@ public protocol XCTestExpectationProtocol: AnyObject {
 open class Tester<TestCase: XCTestCaseProtocol> {
     let fail: (_ message: String, _ file: StaticString, _ line: UInt) -> Void
 
-    let wait: (_ expectations: [TestCase.Expectation], _ timeout: TimeInterval, _ enforceOrder: Bool,
+    let wait: (_ expectations: [TestCase.ExpectationType], _ timeout: TimeInterval, _ enforceOrder: Bool,
                _ file: StaticString, _ line: UInt) -> Void
 
-    let expect: (_ description: String, _ file: StaticString, _ line: UInt) -> TestCase.Expectation?
+    let expect: (_ description: String, _ file: StaticString, _ line: UInt) -> TestCase.ExpectationType?
 
-    let fulfill: (_ expectation: TestCase.Expectation, _ file: StaticString, _ line: UInt) -> Void
+    let fulfill: (_ expectation: TestCase.ExpectationType, _ file: StaticString, _ line: UInt) -> Void
 
     init(_ testCase: TestCase, fail: @escaping (String, StaticString, UInt) -> Void = XCTFail) {
         #if os(Linux)

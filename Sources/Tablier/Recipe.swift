@@ -52,7 +52,7 @@ extension Recipe {
         let expecter = Expecter(recipe: AnyRecipe(self))
         makeTestCases(expecter)
 
-        var expectations: [TestCase.Expectation] = []
+        var expectations: [TestCase.ExpectationType] = []
 
         for testCase in testCases {
             let (expected, descriptions) = (testCase.expected, testCase.descriptions)
