@@ -20,6 +20,7 @@ matrix:
     - name: macOS / Swift 5.0
       language: objective-c
       osx_image: xcode10.2
+      os: osx
       script:
         - swift --version
         - make test/spm test/xcode test/examples
@@ -36,15 +37,3 @@ matrix:
       script:
         - swift --version
         - make test/spm
-
-deploy:
-  provider: script
-  script: pod trunk push
-  skip_cleanup: true
-  on:
-    condition: $TRAVIS_BRANCH == "master" || -n $TRAVIS_TAG
-
-env:
-  global:
-    - secure: BwamChPwbDFLJpaA7CG6Iw/n9bwFKIvUhHvO2c0NIsnn3o1VDHgdn0udsj9q6xKX9eWfNYPxVJ0b/vwMKh2Oz/6ZJkr0zAw6yJrWP+lb5K6OkmDKnzUVMxIRZGMePykRemleZLOugEKGtIFbi4tqwenyEfNf/U4LsMVl43eO/Vs5eAAzYKGPKjjFmG4ws/Evo2WS4eOZTuxFOtYg027GltkN0/yX33CCiJ+CXmp2Duxgz/G+muP8vm6ozlg0GTTL6v/R+gZQR1cvOiWjusYAAqooE3W+LnPB6sVXHigig4jgZqkN2imQBNp8wPWu5DPweI/E+yRDob+kQPM1RSz5gMhhZYDo+CjMoblpTaHMcDwFcTM4x2HOa6BtBnFAASvBxFTgeKB977IsOifmumEx9nADhxK9bZu2+wxMV5XdVM3PJ5liRz2uzpeWCi0u1qCT/LB296b+Y2zV2n75722O5S1Ff0EdKga6j9mS4ZD2Ti2sS7XUWNb9JAXxC3UwP11xdbaWcWzElbGh+hWidsRyyFbPLRs6hBPVnMEXfgefjDpAyb6+i6T+skGPAq5DqMPwa5vk84L9FA6+UBjKEPrmNh0zOw3LRGfBeoBHAisyw0d4/gRemyUC+WF9R+fIJd4wZePWVxrtp9OuCR9myMwGmAjeEc8iAw2LYTkl0JvEhX8=
-    - secure: Fnoryzl3eYb9XJMsNmrpyGFzI+JhRPvG3zc3vjEOl545f48uPPvHySYVBWf/8WKYHGxNExFwMdG2a3Fzk5WD18ooeOoTp+XdVXP1xlYzgtJSWkZnU+vXFMEWk78G9dXpP4JtaiBSIW9njon3nDBWbmmpX5BWREFFOLvc1CmQV//pnljStryAnWG30EgDd6+dqJUtvZmGhffIw8p6OcOzpl60EA7nCjhwsP5e5Nh/U/AMFkPEDH0UoRukFOWXuDlS+WE5a1vM366mEoE+dowzohGL4vjYYX65eo41qrXnhnAMwBvwB5yFkcWhWOkoy9z2sLyngQk0LHr/qziUpR2sWfC0JprBMAl3EU+Kx88zAuRIwyc7qkAIiPah4S71psU+Rpx0PrbODoceKMujCabdac9MX97OzqoErdVP0HEoa06S0El/Dd28j/NcXDSh2e9329nOhwN27TKYW7MgH8QyoKyoewgm4ZeSYKOOjZouH1FiyBAHOkxFTTqK/M8/NTjBOcEOqVqAn8S6VrjNWjSMd5Mj5u45QqPeacv25NjRCAi2vNw78G7J6bvkQs82ub6JOXiKsR2oeD2G0+GfJLakrI3JE60mdLQERk1DEhFlEBSOxJq6WtBnyNb0IlvjMxqoCBLw56EzXg9k6MtUt2hOqYFLbqOSolpSEylyENQs/sI=
