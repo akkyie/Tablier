@@ -42,7 +42,7 @@ end
 ### Carthage
 
 ```ruby
-github "Tablier"
+github "akkyie/Tablier"
 ```
 
 ## Usage
