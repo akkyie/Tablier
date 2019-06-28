@@ -4,7 +4,7 @@ protocol RecipeType: AnyObject {
     associatedtype Input
     associatedtype Output: Equatable
 
-    var testCases: [TestCase<Input, Output>] { get set }
+    var testCases: [Recipe<Input, Output>.TestCase] { get set }
 }
 
 public final class Recipe<Input, Output: Equatable>: RecipeType {
@@ -13,7 +13,7 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
     public typealias Completion = (Output?, Error?) -> Void
     public typealias RecipeClosure = (Input, _ completion: @escaping Completion) -> Void
 
-    var testCases: [TestCase<Input, Output>] = []
+    var testCases: [TestCase] = []
 
     let recipe: RecipeClosure
     let timeout: TimeInterval
@@ -40,16 +40,16 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
 extension Recipe {
     public func assert<TestCase: XCTestCaseProtocol>(
         with testCase: TestCase, file: StaticString = #file, line: UInt = #line,
-        assertion makeTestCases: (_ asserter: Expecter<Input, Output>) -> Void
+        assertion makeTestCases: (_ asserter: Expecter) -> Void
     ) {
         assert(with: Tester(testCase), file: file, line: line, assertion: makeTestCases)
     }
 
     public func assert<TestCase: XCTestCaseProtocol>(
         with tester: Tester<TestCase>, file: StaticString = #file, line: UInt = #line,
-        assertion makeTestCases: (_ asserter: Expecter<Input, Output>) -> Void
+        assertion makeTestCases: (_ asserter: Expecter) -> Void
     ) {
-        let expecter = Expecter<Input, Output>(recipe: AnyRecipe(self))
+        let expecter = Expecter(recipe: AnyRecipe(self))
         makeTestCases(expecter)
 
         var expectations: [TestCase.Expectation] = []

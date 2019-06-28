@@ -7,7 +7,7 @@ final class ExpectTests: XCTestCase {
         let expected = "expected"
         let recipe = MockRecipe<String, String>()
         do {
-            let expect = Expect<String, String>(
+            let expect = Recipe<String, String>.Expect(
                 recipe: AnyRecipe(recipe),
                 inputs: inputs,
                 expected: expected,
@@ -31,7 +31,7 @@ final class ExpectTests: XCTestCase {
         let expected = "expected"
         let recipe = MockRecipe<String, String>()
         do {
-            let expect = Expect<String, String>(
+            let expect = Recipe<String, String>.Expect(
                 recipe: AnyRecipe(recipe),
                 inputs: inputs,
                 expected: expected,
