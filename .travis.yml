@@ -23,7 +23,7 @@ matrix:
       os: osx
       script:
         - swift --version
-        - make test/spm test/xcode test/examples
+        - make test/spm test/xcode
         - make linuxmain && git diff --exit-code **/XCTestManifests.swift
       after_success:
         - bash <(curl -s https://codecov.io/bash) -X gcov -J '^Tablier$'
