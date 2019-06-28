@@ -1,2 +1,7 @@
+// Minimum deployment targets
+IPHONEOS_DEPLOYMENT_TARGET = 10.0
+MACOSX_DEPLOYMENT_TARGET = 10.10
+TVOS_DEPLOYMENT_TARGET = 9.0
+
 // XCTest doesn't include bitcode
 ENABLE_BITCODE=NO
