@@ -6,7 +6,7 @@ import Tablier
 /// Sync Example
 final class PluralizeTests: XCTestCase {
     func testPluralize() {
-        let recipe = Recipe<String, String>(sync: { input in
+        let recipe = Recipe<String, String>(sync: { input, _, _ in
             return try pluralize(word: input)
         })
 

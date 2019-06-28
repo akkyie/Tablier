@@ -24,7 +24,7 @@ final class ViewModelTests: XCTestCase {
 
         let testCredential = Credential(username: "username", password: "password")
 
-        let recipe = Recipe<Input, Output>(sync: { input in
+        let recipe = Recipe<Input, Output>(sync: { input, _, _ in
             let disposeBag = DisposeBag()
 
             let scheduler = TestScheduler(initialClock: 0)

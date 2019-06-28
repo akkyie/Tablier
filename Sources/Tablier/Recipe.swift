@@ -11,7 +11,10 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
     public static var defaultTimeout: TimeInterval { return 5 }
 
     public typealias Completion = (Output?, Error?) -> Void
-    public typealias RecipeClosure = (Input, _ completion: @escaping Completion) -> Void
+    public typealias RecipeClosure =
+        (Input, _ completion: @escaping Completion, _ file: StaticString, _ line: UInt) -> Void
+    public typealias SyncRecipeClosure =
+        (Input, _ file: StaticString, _ line: UInt) throws -> Output
 
     var testCases: [TestCase] = []
 
@@ -25,10 +28,10 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
     }
 
     public convenience init(description: String = "",
-                            sync recipe: @escaping (Input) throws -> Output) {
-        self.init(description: description, timeout: 0, async: { input, completion in
+                            sync recipe: @escaping SyncRecipeClosure) {
+        self.init(description: description, timeout: 0, async: { input, completion, file, line in
             do {
-                let actual = try recipe(input)
+                let actual = try recipe(input, file, line)
                 completion(actual, nil)
             } catch let error {
                 completion(nil, error)
@@ -63,7 +66,7 @@ extension Recipe {
                 return
             }
 
-            recipe(testCase.input) { (actual, error) in
+            let handleResult = { (actual: Output?, error: Error?) -> Void in
                 switch (actual, error) {
                 case let (actual?, nil):
                     guard actual != expected else { break }
@@ -91,6 +94,8 @@ extension Recipe {
 
                 tester.fulfill(expectation, testCase.file, testCase.line)
             }
+
+            recipe(testCase.input, handleResult, testCase.file, testCase.line)
 
             expectations.append(expectation)
         }
