@@ -1,3 +1,6 @@
+// Version has to be set for App Store distribution
+CURRENT_PROJECT_VERSION = 1
+
 // Minimum deployment targets
 IPHONEOS_DEPLOYMENT_TARGET = 10.0
 MACOSX_DEPLOYMENT_TARGET = 10.10
