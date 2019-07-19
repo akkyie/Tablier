@@ -3,9 +3,36 @@ import XCTest
 
 private struct StubError: Error, Equatable {}
 
-final class RecipeTests: XCTestCase {
+final class RecipeTests: XCTestCase {}
+
+// MARK: - Init
+extension RecipeTests {
     func testInitClosure() {
-        do {
+        do { // successful async initializer without file/line
+            let recipe = Recipe<String, String> { _, completion in
+                completion("result", nil)
+            }
+
+            recipe.recipe("input", { (actual, error) in
+                XCTAssertEqual(actual, "result",
+                               "recipe should have the clousure passed by its initializer")
+                XCTAssertNil(error)
+            }, #file, #line)
+        }
+
+        do { // failing async initializer without file/line
+            let recipe = Recipe<String, String> { _, completion in
+                completion(nil, StubError())
+            }
+
+            recipe.recipe("input", { (actual, error) in
+                XCTAssertNil(actual)
+                XCTAssertEqual(error as? StubError, StubError(),
+                               "recipe should have the clousure passed by its initializer")
+            }, #file, #line)
+        }
+
+        do { // successful async initializer with file/line
             let recipe = Recipe<String, String> { _, completion, _, _ in
                 completion("result", nil)
             }
@@ -17,7 +44,7 @@ final class RecipeTests: XCTestCase {
             }, #file, #line)
         }
 
-        do {
+        do { // failing async initializer with file/line
             let recipe = Recipe<String, String> { _, completion, _, _ in
                 completion(nil, StubError())
             }
@@ -29,24 +56,48 @@ final class RecipeTests: XCTestCase {
             }, #file, #line)
         }
 
-        do {
-            let successRecipe = Recipe<String, String> { _, _, _ in
+        do { // successful sync initializer without file/line
+            let recipe = Recipe<String, String> { _ in
                 return "result"
             }
 
-            successRecipe.recipe("input", { (actual, error) in
+            recipe.recipe("input", { (actual, error) in
                 XCTAssertEqual(actual, "result",
                                "Sync initalizer should pass closure to async initializer")
                 XCTAssertNil(error)
             }, #file, #line)
         }
 
-        do {
-            let failureRecipe = Recipe<String, String> { _, _, _ in
+        do { // failing sync initializer without file/line
+            let recipe = Recipe<String, String> { _ in
                 throw StubError()
             }
 
-            failureRecipe.recipe("input", { (actual, error) in
+            recipe.recipe("input", { (actual, error) in
+                XCTAssertNil(actual)
+                XCTAssertEqual(error as? StubError, StubError(),
+                               "Sync initalizer should pass closure to async initializer")
+            }, #file, #line)
+        }
+
+        do {
+            let recipe = Recipe<String, String> { _, _, _ in
+                return "result"
+            }
+
+            recipe.recipe("input", { (actual, error) in
+                XCTAssertEqual(actual, "result",
+                               "Sync initalizer should pass closure to async initializer")
+                XCTAssertNil(error)
+            }, #file, #line)
+        }
+
+        do { // failing sync initializer with file/line
+            let recipe = Recipe<String, String> { _, _, _ in
+                throw StubError()
+            }
+
+            recipe.recipe("input", { (actual, error) in
                 XCTAssertNil(actual)
                 XCTAssertEqual(error as? StubError, StubError(),
                                "Sync initalizer should pass closure to async initializer")
@@ -93,7 +144,10 @@ final class RecipeTests: XCTestCase {
 
         recipe.assert(with: testCase) { _ in }
     }
+}
 
+// MARK: - Assert
+extension RecipeTests {
     func testPassingAssert() {
         let expectationExpectation = expectation(description: "`expectation` should be called")
         let failExpectation = expectation(description: "`fail` should NOT be called")
@@ -109,7 +163,7 @@ final class RecipeTests: XCTestCase {
 
         let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
 
-        let recipe = Recipe<String, String> { _, completion, _, _ in
+        let recipe = Recipe<String, String> { _, completion in
             completion("expected", nil)
         }
 
@@ -139,7 +193,7 @@ final class RecipeTests: XCTestCase {
 
         let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
 
-        let recipe = Recipe<String, String> { _, completion, _, _ in
+        let recipe = Recipe<String, String> { _, completion in
             completion("FOOBAR", nil)
         }
 
@@ -169,7 +223,7 @@ final class RecipeTests: XCTestCase {
 
         let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
 
-        let recipe = Recipe<String, String> { _, completion, _, _ in
+        let recipe = Recipe<String, String> { _, completion in
             completion(nil, StubError())
         }
 
@@ -200,7 +254,7 @@ final class RecipeTests: XCTestCase {
 
             let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
 
-            let recipe = Recipe<String, String> { _, completion, _, _ in
+            let recipe = Recipe<String, String> { _, completion in
                 completion("expected", StubError())
             }
 
@@ -230,7 +284,7 @@ final class RecipeTests: XCTestCase {
 
             let tester = Tester(testCase, fail: { _, _, _ in failExpectation.fulfill() })
 
-            let recipe = Recipe<String, String> { _, completion, _, _ in
+            let recipe = Recipe<String, String> { _, completion in
                 completion(nil, nil)
             }
 
@@ -265,7 +319,7 @@ final class RecipeTests: XCTestCase {
 
         let tester = Tester(testCase!, fail: { _, _, _ in failExpectation.fulfill() })
 
-        let recipe = Recipe<String, String> { _, completion, _, _ in
+        let recipe = Recipe<String, String> { _, completion in
             completion(nil, StubError())
         }
 

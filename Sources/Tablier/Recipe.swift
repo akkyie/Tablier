@@ -13,25 +13,42 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
     public typealias Completion = (Output?, Error?) -> Void
     public typealias RecipeClosure =
         (Input, _ completion: @escaping Completion, _ file: StaticString, _ line: UInt) -> Void
-    public typealias SyncRecipeClosure =
-        (Input, _ file: StaticString, _ line: UInt) throws -> Output
 
     var testCases: [TestCase] = []
 
     let recipe: RecipeClosure
     let timeout: TimeInterval
 
-    public init(description: String = "", timeout: TimeInterval = defaultTimeout,
-                async recipe: @escaping RecipeClosure) {
+    // MARK: Async initializers
+
+    public init(timeout: TimeInterval = defaultTimeout, async recipe: @escaping RecipeClosure) {
         self.recipe = recipe
         self.timeout = timeout
     }
 
-    public convenience init(description: String = "",
-                            sync recipe: @escaping SyncRecipeClosure) {
-        self.init(description: description, timeout: 0, async: { input, completion, file, line in
+    public init(timeout: TimeInterval = defaultTimeout,
+                async recipe: @escaping (Input, _ completion: @escaping Completion) -> Void) {
+        self.recipe = { input, completion, _, _ in recipe(input, completion) }
+        self.timeout = timeout
+    }
+
+    // MARK: Sync initializers
+
+    public convenience init(sync recipe: @escaping (Input, StaticString, UInt) throws -> Output) {
+        self.init(timeout: 0, async: { input, completion, file, line in
             do {
                 let actual = try recipe(input, file, line)
+                completion(actual, nil)
+            } catch let error {
+                completion(nil, error)
+            }
+        })
+    }
+
+    public convenience init(sync recipe: @escaping (Input) throws -> Output) {
+        self.init(timeout: 0, async: { input, completion, _, _ in
+            do {
+                let actual = try recipe(input)
                 completion(actual, nil)
             } catch let error {
                 completion(nil, error)
