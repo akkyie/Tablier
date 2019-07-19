@@ -6,7 +6,7 @@ import Tablier
 /// Async Example
 final class AsyncTests: XCTestCase {
     func testAsync() {
-        let recipe = Recipe<String, String>(async: { input, completion, _, _ in
+        let recipe = Recipe<String, String>(async: { input, completion in
             asyncEcho(input) { output in
                 completion(output, nil)
             }

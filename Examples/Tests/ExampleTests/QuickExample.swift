@@ -8,7 +8,7 @@ import Tablier
 final class QuickTests: QuickSpec {
     override func spec() {
         describe("pluralize") {
-            let recipe = Recipe<String, String>(sync: { input, _, _ in
+            let recipe = Recipe<String, String>(sync: { input in
                 return try pluralize(word: input)
             })
 
