@@ -15,8 +15,7 @@ Pod::Spec.new do |spec|
   spec.license      = "MIT"
   spec.license      = { :type => "MIT", :file => "LICENSE" }
 
-  spec.author             = { "Akio Yasui" => "akkyie01@gmail.com" }
-  spec.social_media_url   = "https://twitter.com/akkyie"
+  spec.author       = { "Akio Yasui" => "akkyie01@gmail.com" }
 
   spec.ios.deployment_target = "8.0"
   spec.osx.deployment_target = "10.9"
