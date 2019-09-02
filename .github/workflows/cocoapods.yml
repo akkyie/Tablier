@@ -1,0 +1,16 @@
+name: Deploy to CocoaPods
+
+on:
+  push:
+    tags: ["*"]
+
+jobs:
+  deploy:
+    runs-on: macOS-10.14
+
+    steps:
+      - uses: actions/checkout@v1
+      - run: gem install -N cocoapods
+      - run: pod trunk push --verbose
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
