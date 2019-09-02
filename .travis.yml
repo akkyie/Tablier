@@ -33,7 +33,11 @@ matrix:
       dist: xenial
       env: SWIFT_VERSION=5.0
       install:
-        - eval "$(curl -sL https://swiftenv.fuller.li/install.sh)"
+        - git clone https://github.com/kylef/swiftenv.git ~/.swiftenv
+        - export SWIFTENV_ROOT="$HOME/.swiftenv"
+        - export PATH="$SWIFTENV_ROOT/bin:$PATH"
+        - eval "$(swiftenv init -)"
+        - swiftenv install
       script:
         - swift --version
         - make test/spm
