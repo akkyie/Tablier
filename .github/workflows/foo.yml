@@ -1,0 +1,10 @@
+name: Test Actions
+
+on: push
+
+jobs:
+  test:
+    runs-on: macOS-10.14
+
+    steps:
+      - run: echo TEST
