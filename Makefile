@@ -35,21 +35,18 @@ test/docker: clean/spm linuxmain
 .PHONY: xcodeproj
 xcodeproj: $(PROJECT)
 $(PROJECT): .FORCE
-	swift package generate-xcodeproj --enable-code-coverage --xcconfig-overrides $(XCCONFIG)
-	@echo "warn: Don't forget to remove ./Examples from the project."
+	swift package generate-xcodeproj \
+		--enable-code-coverage \
+		--skip-extra-files \
+		--xcconfig-overrides $(XCCONFIG)
 
 .PHONY: linuxmain
 linuxmain:
 	swift test --generate-linuxmain
 
-GREP_EXAMPLES_RESULT = $(shell grep "Examples" $(PROJECT)/project.pbxproj)
-.PHONY: lint/xcode
-lint/xcode:
-ifeq ($(GREP_EXAMPLES_RESULT),)
-	@ echo "OK: Examples directory was not found in the project"
-else
-	$(error Remove Examples directory from the project)
-endif
+.PHONY: lint/xcodeproj
+lint/xcodeproj:
+	./Scripts/check_xcodeproj_diff.sh
 
 LATEST_VERSION = $(shell git describe --tags `git rev-list --tags --max-count=1`)
 
