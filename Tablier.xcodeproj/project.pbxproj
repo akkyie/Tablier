@@ -76,7 +76,7 @@
 		OBJ_28 /* Configs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Configs; sourceTree = SOURCE_ROOT; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		OBJ_8 /* SwiftPM.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SwiftPM.xcconfig; path = Configs/SwiftPM.xcconfig; sourceTree = "<group>"; };
-		"Tablier::Tablier::Product" /* Tablier.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Tablier.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		"Tablier::Tablier::Product" /* Tablier.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Tablier.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		"Tablier::TablierTests::Product" /* TablierTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = TablierTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -347,8 +347,13 @@
 			baseConfigurationReference = OBJ_8 /* SwiftPM.xcconfig */;
 			buildSettings = {
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Tablier.xcodeproj/Tablier_Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
@@ -367,8 +372,13 @@
 			baseConfigurationReference = OBJ_8 /* SwiftPM.xcconfig */;
 			buildSettings = {
 				ENABLE_TESTABILITY = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PLATFORM_DIR)/Developer/Library/Frameworks",
+				);
 				HEADER_SEARCH_PATHS = "$(inherited)";
 				INFOPLIST_FILE = Tablier.xcodeproj/Tablier_Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) $(TOOLCHAIN_DIR)/usr/lib/swift/macosx";
 				OTHER_CFLAGS = "$(inherited)";
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
