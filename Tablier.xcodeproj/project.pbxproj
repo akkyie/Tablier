@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		C5C73C0F26CF395300E43BAA /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C5C73C0E26CF395300E43BAA /* XCTest.framework */; };
 		OBJ_37 /* AnyRecipe.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_11 /* AnyRecipe.swift */; };
 		OBJ_38 /* Expect.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_12 /* Expect.swift */; };
 		OBJ_39 /* Expecter.swift in Sources */ = {isa = PBXBuildFile; fileRef = OBJ_13 /* Expecter.swift */; };
@@ -57,6 +58,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C5C73C0E26CF395300E43BAA /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/MacOSX.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		OBJ_11 /* AnyRecipe.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnyRecipe.swift; sourceTree = "<group>"; };
 		OBJ_12 /* Expect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expect.swift; sourceTree = "<group>"; };
 		OBJ_13 /* Expecter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expecter.swift; sourceTree = "<group>"; };
@@ -83,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 0;
 			files = (
+				C5C73C0F26CF395300E43BAA /* XCTest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -97,6 +100,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C5C73C0D26CF395300E43BAA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				C5C73C0E26CF395300E43BAA /* XCTest.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		OBJ_10 /* Tablier */ = {
 			isa = PBXGroup;
 			children = (
@@ -144,7 +155,7 @@
 			name = Products;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		OBJ_5 /*  */ = {
+		OBJ_5 = {
 			isa = PBXGroup;
 			children = (
 				OBJ_6 /* Package.swift */,
@@ -153,8 +164,8 @@
 				OBJ_18 /* Tests */,
 				OBJ_28 /* Configs */,
 				OBJ_29 /* Products */,
+				C5C73C0D26CF395300E43BAA /* Frameworks */,
 			);
-			name = "";
 			sourceTree = "<group>";
 		};
 		OBJ_7 /* Configs */ = {
@@ -239,7 +250,7 @@
 				English,
 				en,
 			);
-			mainGroup = OBJ_5 /*  */;
+			mainGroup = OBJ_5;
 			productRefGroup = OBJ_29 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
