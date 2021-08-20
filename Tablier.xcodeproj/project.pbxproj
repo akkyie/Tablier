@@ -76,8 +76,8 @@
 		OBJ_28 /* Configs */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Configs; sourceTree = SOURCE_ROOT; };
 		OBJ_6 /* Package.swift */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = Package.swift; sourceTree = "<group>"; };
 		OBJ_8 /* SwiftPM.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = SwiftPM.xcconfig; path = Configs/SwiftPM.xcconfig; sourceTree = "<group>"; };
-		"Tablier::Tablier::Product" /* Tablier.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Tablier.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		"Tablier::TablierTests::Product" /* TablierTests.xctest */ = {isa = PBXFileReference; lastKnownFileType = file; path = TablierTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		"Tablier::Tablier::Product" /* Tablier.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = Tablier.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		"Tablier::TablierTests::Product" /* TablierTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; path = TablierTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -241,6 +241,14 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 9999;
+				TargetAttributes = {
+					"Tablier::Tablier" = {
+						LastSwiftMigration = 1250;
+					};
+					"Tablier::TablierTests" = {
+						LastSwiftMigration = 1250;
+					};
+				};
 			};
 			buildConfigurationList = OBJ_2 /* Build configuration list for PBXProject "Tablier" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -362,7 +370,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGET_NAME = Tablier;
 			};
 			name = Debug;
@@ -387,7 +395,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGET_NAME = Tablier;
 			};
 			name = Release;
@@ -459,7 +467,7 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGET_NAME = TablierTests;
 			};
 			name = Debug;
@@ -481,7 +489,7 @@
 				OTHER_LDFLAGS = "$(inherited)";
 				OTHER_SWIFT_FLAGS = "$(inherited)";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited)";
-				SWIFT_VERSION = 4.2;
+				SWIFT_VERSION = 5.0;
 				TARGET_NAME = TablierTests;
 			};
 			name = Release;
