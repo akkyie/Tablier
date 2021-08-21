@@ -2,8 +2,7 @@
 
 [![Build Status](https://travis-ci.com/akkyie/Tablier.svg?branch=master)](https://travis-ci.com/akkyie/Tablier)
 [![codecov](https://codecov.io/gh/akkyie/Tablier/branch/master/graph/badge.svg)](https://codecov.io/gh/akkyie/Tablier)
-![Swift 4.2](https://img.shields.io/badge/swift-4.2-orange.svg)
-![Swift 5.0](https://img.shields.io/badge/swift-5.0-orange.svg)
+![Swift 5](https://img.shields.io/badge/swift-5-orange.svg)
 ![CocoaPods compatible](https://img.shields.io/cocoapods/v/Tablier.svg)
 ![Carthage compatible](https://img.shields.io/badge/carthage-compatible-brightgreen.svg)
 ![SPM compatible](https://img.shields.io/badge/SPM-Compatible-brightgreen.svg)
@@ -27,7 +26,7 @@ A micro-framework for [_Table Driven Tests_](https://github.com/golang/go/wiki/T
 ### Swift Package Manager
 
 ```swift
-.package(url: "https://github.com/akkyie/Tablier", from: "0.2.0")
+.package(url: "https://github.com/akkyie/Tablier", from: "0.4.0")
 ```
 
 ### Cocoapods
