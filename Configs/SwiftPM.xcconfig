@@ -8,3 +8,6 @@ TVOS_DEPLOYMENT_TARGET = 9.0
 
 // XCTest doesn't include bitcode
 ENABLE_BITCODE=NO
+
+// Allows linking against XCTest
+ENABLE_TESTING_SEARCH_PATHS=YES

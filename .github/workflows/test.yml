@@ -16,7 +16,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - run: make lint/xcode
       - uses: mxcl/xcodebuild@v1
         with:
           swift: ${{ matrix.swift }}
@@ -31,3 +30,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: make test/spm
+
+  lint_xcodeproj:
+    runs-on: macos-11
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - uses: actions/cache@v2
+        with:
+          path: .build
+          key: ${{ runner.os }}-${{ hashFiles('Package.resolved') }}
+      - uses: mxcl/xcodebuild@v1
+        with:
+          xcode: 12.5.1
+          action: none
+      - run: make xcodeproj && make lint/xcodeproj
