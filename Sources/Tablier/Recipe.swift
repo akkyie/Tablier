@@ -4,7 +4,7 @@ protocol RecipeType: AnyObject {
     associatedtype Input
     associatedtype Output: Equatable
 
-    var testCases: [Recipe<Input, Output>.TestCase] { get set }
+    var testCases: [TestCase<Input, Output>] { get set }
 }
 
 public final class Recipe<Input, Output: Equatable>: RecipeType {
@@ -14,7 +14,7 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
     public typealias RecipeClosure =
         (Input, _ completion: @escaping Completion, _ file: StaticString, _ line: UInt) -> Void
 
-    var testCases: [TestCase] = []
+    var testCases: [TestCase<Input, Output>] = []
 
     let recipe: RecipeClosure
     let timeout: TimeInterval
@@ -69,14 +69,14 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
 extension Recipe {
     public func assert<TestCase: XCTestCaseProtocol>(
         with testCase: TestCase, file: StaticString = #file, line: UInt = #line,
-        assertion makeTestCases: (_ asserter: Expecter) -> Void
+        assertion makeTestCases: (_ asserter: Expecter<Input, Output>) -> Void
     ) {
         assert(with: Tester(testCase), file: file, line: line, assertion: makeTestCases)
     }
 
     public func assert<TestCase: XCTestCaseProtocol>(
         with tester: Tester<TestCase>, file: StaticString = #file, line: UInt = #line,
-        assertion makeTestCases: (_ asserter: Expecter) -> Void
+        assertion makeTestCases: (_ asserter: Expecter<Input, Output>) -> Void
     ) {
         let expecter = Expecter(recipe: AnyRecipe(self))
         makeTestCases(expecter)
