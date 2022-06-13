@@ -88,7 +88,7 @@ extension Recipe {
             let description = descriptions.joined(separator: " - ")
 
             guard let expectation = tester.expect(description, file, line) else {
-                print("[Tablier] \(#file):\(#line): the test case got released before the assertion was completed")
+                print("[Tablier] \(#file):\(#line): the test case got released before the assertion completes")
                 return
             }
 
