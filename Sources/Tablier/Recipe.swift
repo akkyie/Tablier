@@ -21,20 +21,27 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
 
     // MARK: Async initializers
 
-    public init(timeout: TimeInterval = defaultTimeout, async recipe: @escaping RecipeClosure) {
+    public init(
+        timeout: TimeInterval = defaultTimeout,
+        async recipe: @escaping RecipeClosure
+    ) {
         self.recipe = recipe
         self.timeout = timeout
     }
 
-    public init(timeout: TimeInterval = defaultTimeout,
-                async recipe: @escaping (Input, _ completion: @escaping Completion) -> Void) {
+    public init(
+        timeout: TimeInterval = defaultTimeout,
+        async recipe: @escaping (Input, _ completion: @escaping Completion) -> Void
+    ) {
         self.recipe = { input, completion, _, _ in recipe(input, completion) }
         self.timeout = timeout
     }
 
     // MARK: Sync initializers
 
-    public convenience init(sync recipe: @escaping (Input, StaticString, UInt) throws -> Output) {
+    public convenience init(
+        sync recipe: @escaping (Input, StaticString, UInt) throws -> Output
+    ) {
         self.init(timeout: 0, async: { input, completion, file, line in
             do {
                 let actual = try recipe(input, file, line)
@@ -45,7 +52,9 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
         })
     }
 
-    public convenience init(sync recipe: @escaping (Input) throws -> Output) {
+    public convenience init(
+        sync recipe: @escaping (Input) throws -> Output
+    ) {
         self.init(timeout: 0, async: { input, completion, _, _ in
             do {
                 let actual = try recipe(input)

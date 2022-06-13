@@ -9,8 +9,10 @@ extension XCTestExpectation: XCTestExpectationProtocol {}
 public protocol XCTestCaseProtocol: AnyObject {
     associatedtype ExpectationType: XCTestExpectationProtocol
 
-    func wait(for expectations: [ExpectationType], timeout: TimeInterval, enforceOrder: Bool,
-              file: StaticString, line: Int)
+    func wait(
+        for expectations: [ExpectationType], timeout: TimeInterval, enforceOrder: Bool,
+        file: StaticString, line: Int
+    )
 
     func expectation(description: String, file: StaticString, line: Int) -> ExpectationType
 }
@@ -80,7 +82,7 @@ open class Tester<TestCase: XCTestCaseProtocol> {
         let descriptions = [
             "expected: \(defaultDescription(for: expected))",
             "actual: \(defaultDescription(for: actual))",
-            ] + descriptions
+        ] + descriptions
         return descriptions.joined(separator: " - ")
     }
 
@@ -88,7 +90,7 @@ open class Tester<TestCase: XCTestCaseProtocol> {
         let descriptions = [
             "expected: \(defaultDescription(for: expected))",
             "error: \(defaultDescription(for: error))",
-            ] + descriptions
+        ] + descriptions
         return descriptions.joined(separator: " - ")
     }
 

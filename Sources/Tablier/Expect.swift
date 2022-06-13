@@ -7,8 +7,10 @@ extension Recipe {
         let line: UInt
         var descriptions: [String] = []
 
-        init(recipe: AnyRecipe<Input, Output>, inputs: [Input], expected: Output,
-             descriptions: [String], file: StaticString, line: UInt) {
+        init(
+            recipe: AnyRecipe<Input, Output>, inputs: [Input], expected: Output,
+            descriptions: [String], file: StaticString, line: UInt
+        ) {
             self.recipe = recipe
             self.inputs = inputs
             self.expected = expected
