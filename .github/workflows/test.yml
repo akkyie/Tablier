@@ -7,12 +7,14 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-latest
+          - os: macos-11
             swift: "~5.3"
           - os: macos-11
             swift: "~5.4"
           - os: macos-11
             swift: "~5.5"
+          - os: macos-12
+            swift: "~5.6"
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
@@ -23,7 +25,7 @@ jobs:
   test-spm:
     strategy:
       matrix:
-        swift: ["5.3", "5.4"]
+        swift: ["5.3", "5.4", "5.5", "5.6"]
     runs-on: ubuntu-latest
     container:
       image: swift:${{ matrix.swift }}
