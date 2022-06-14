@@ -6,7 +6,11 @@ final class WhenTests: XCTestCase {
         let inputs = ["a", "b", "c"]
 
         let recipe = MockRecipe<String, String>()
-        let when = Recipe<String, String>.When(recipe: AnyRecipe(recipe), inputs: inputs, file: "file", line: 12345)
+        let when = When(
+            recipe: AnyRecipe(recipe),
+            inputs: inputs,
+            file: "file", line: 12345
+        )
         XCTAssertEqual(when.inputs, inputs)
         XCTAssertEqual(when.descriptions, [])
 

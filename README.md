@@ -16,10 +16,10 @@ A micro-framework for [_Table Driven Tests_](https://github.com/golang/go/wiki/T
 ## Features
 
 - ☑️ Dead simple syntax
-- ☑️ Run async tests in parallel
+- ☑️ Run sync and async tests in parallel
 - ☑️ No additional dependency aside from XCTest
-- ☑️ Use with Quick, or any other XCTest-based testing framework
-- ☑️ Fully tested
+- ☑️ Use with [Quick](https://github.com/Quick/Quick), or any other XCTest-based testing frameworks
+- ☑️ Fully tested itself
 
 ## Installation
 
@@ -45,6 +45,8 @@ github "akkyie/Tablier"
 ```
 
 ## Usage
+
+### Synchronous Recipe
 
 You can define a _test recipe_ to test your classes, structs or functions.
 
@@ -72,7 +74,9 @@ Then you can list inputs and expected outputs for the recipe, to run the actual 
 }
 ```
 
-Defining a recipe with async functions is also supported.
+### Asynchronous Recipe
+
+Defining a recipe with an asynchronous completion is also supported.
 
 ```swift
 let recipe = Recipe<String, Int>(async: { input, complete in
@@ -82,9 +86,20 @@ let recipe = Recipe<String, Int>(async: { input, complete in
 })
 ```
 
+Since Swift 5.5, you can use `AsyncRecipe` to define asynchronous recipes with async/await syntax:
+
+```swift
+let recipe = AsyncRecipe<String, Int> { input in
+    try await myComplexAndSlowParse(input)
+}
+```
+
 #### Note
 
-When an error is thrown in the sync initalizer or the completion handler is called with an error, the test case is considered as failed for now. Testing errors will be supported in the future.
+> **Note**
+>
+> When an error is thrown in the sync initalizer or the completion handler is called with an error, the test case is considered as failed for now.
+> Testing errors will be supported in the future.
 
 ## Examples
 

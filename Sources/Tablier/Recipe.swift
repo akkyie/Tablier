@@ -4,7 +4,7 @@ protocol RecipeType: AnyObject {
     associatedtype Input
     associatedtype Output: Equatable
 
-    var testCases: [Recipe<Input, Output>.TestCase] { get set }
+    var testCases: [TestCase<Input, Output>] { get set }
 }
 
 public final class Recipe<Input, Output: Equatable>: RecipeType {
@@ -14,27 +14,34 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
     public typealias RecipeClosure =
         (Input, _ completion: @escaping Completion, _ file: StaticString, _ line: UInt) -> Void
 
-    var testCases: [TestCase] = []
+    var testCases: [TestCase<Input, Output>] = []
 
     let recipe: RecipeClosure
     let timeout: TimeInterval
 
     // MARK: Async initializers
 
-    public init(timeout: TimeInterval = defaultTimeout, async recipe: @escaping RecipeClosure) {
+    public init(
+        timeout: TimeInterval = defaultTimeout,
+        async recipe: @escaping RecipeClosure
+    ) {
         self.recipe = recipe
         self.timeout = timeout
     }
 
-    public init(timeout: TimeInterval = defaultTimeout,
-                async recipe: @escaping (Input, _ completion: @escaping Completion) -> Void) {
+    public init(
+        timeout: TimeInterval = defaultTimeout,
+        async recipe: @escaping (Input, _ completion: @escaping Completion) -> Void
+    ) {
         self.recipe = { input, completion, _, _ in recipe(input, completion) }
         self.timeout = timeout
     }
 
     // MARK: Sync initializers
 
-    public convenience init(sync recipe: @escaping (Input, StaticString, UInt) throws -> Output) {
+    public convenience init(
+        sync recipe: @escaping (Input, StaticString, UInt) throws -> Output
+    ) {
         self.init(timeout: 0, async: { input, completion, file, line in
             do {
                 let actual = try recipe(input, file, line)
@@ -45,7 +52,9 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
         })
     }
 
-    public convenience init(sync recipe: @escaping (Input) throws -> Output) {
+    public convenience init(
+        sync recipe: @escaping (Input) throws -> Output
+    ) {
         self.init(timeout: 0, async: { input, completion, _, _ in
             do {
                 let actual = try recipe(input)
@@ -60,14 +69,14 @@ public final class Recipe<Input, Output: Equatable>: RecipeType {
 extension Recipe {
     public func assert<TestCase: XCTestCaseProtocol>(
         with testCase: TestCase, file: StaticString = #file, line: UInt = #line,
-        assertion makeTestCases: (_ asserter: Expecter) -> Void
+        assertion makeTestCases: (_ asserter: Expecter<Input, Output>) -> Void
     ) {
         assert(with: Tester(testCase), file: file, line: line, assertion: makeTestCases)
     }
 
     public func assert<TestCase: XCTestCaseProtocol>(
         with tester: Tester<TestCase>, file: StaticString = #file, line: UInt = #line,
-        assertion makeTestCases: (_ asserter: Expecter) -> Void
+        assertion makeTestCases: (_ asserter: Expecter<Input, Output>) -> Void
     ) {
         let expecter = Expecter(recipe: AnyRecipe(self))
         makeTestCases(expecter)
@@ -79,7 +88,7 @@ extension Recipe {
             let description = descriptions.joined(separator: " - ")
 
             guard let expectation = tester.expect(description, file, line) else {
-                print("[Tablier] \(#file):\(#line): the test case got released before the assertion was completed")
+                print("[Tablier] \(#file):\(#line): the test case got released before the assertion completes")
                 return
             }
 
