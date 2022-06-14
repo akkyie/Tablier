@@ -26,7 +26,7 @@ A micro-framework for [_Table Driven Tests_](https://github.com/golang/go/wiki/T
 ### Swift Package Manager
 
 ```swift
-.package(url: "https://github.com/akkyie/Tablier", from: "0.4.0")
+.package(url: "https://github.com/akkyie/Tablier", from: <#version#>)
 ```
 
 ### Cocoapods
@@ -36,12 +36,6 @@ target 'YourTests' do
     inherit! :search_paths
     pod 'Tablier'
 end
-```
-
-### Carthage
-
-```ruby
-github "akkyie/Tablier"
 ```
 
 ## Usage

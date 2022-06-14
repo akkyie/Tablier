@@ -10,9 +10,7 @@ let package = Package(
             targets: ["Tablier"]
         ),
     ],
-    dependencies: [
-        .package(url: "https://github.com/bloomberg/xcdiff", .upToNextMinor(from: "0.7.0")),
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "Tablier",
