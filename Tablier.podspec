@@ -20,7 +20,7 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = "8.0"
   spec.osx.deployment_target = "10.9"
   spec.tvos.deployment_target = "9.0"
-  spec.swift_version = "4.2"
+  spec.swift_version = "5"
 
   spec.source       = { :git => "https://github.com/akkyie/Tablier.git", :tag => "#{spec.version}" }
   spec.source_files  = "Sources/Tablier"
