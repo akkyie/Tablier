@@ -17,10 +17,10 @@ Pod::Spec.new do |spec|
 
   spec.author       = { "Akio Yasui" => "akkyie01@gmail.com" }
 
-  spec.ios.deployment_target = "8.0"
-  spec.osx.deployment_target = "10.9"
-  spec.tvos.deployment_target = "9.0"
-  spec.swift_version = "4.2"
+  spec.swift_version = "5"
+  spec.osx.deployment_target = "10.15"
+  spec.ios.deployment_target = "13.0"
+  spec.tvos.deployment_target = "13.0"
 
   spec.source       = { :git => "https://github.com/akkyie/Tablier.git", :tag => "#{spec.version}" }
   spec.source_files  = "Sources/Tablier"
