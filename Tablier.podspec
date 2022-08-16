@@ -27,4 +27,7 @@ Pod::Spec.new do |spec|
   spec.requires_arc = true
 
   spec.framework  = "XCTest"
+  spec.pod_target_xcconfig = {
+     "ENABLE_TESTING_SEARCH_PATHS" => "YES"
+   }
 end
